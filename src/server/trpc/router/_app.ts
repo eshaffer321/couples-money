@@ -7,7 +7,7 @@ import {budgetMonthRouter} from "./budget-month";
 export const appRouter = router({
   example: exampleRouter,
   auth: authRouter,
-  budget_month: budgetMonthRouter
+  budgetMonth: budgetMonthRouter
 });
 
 // export type definition of API

@@ -7,7 +7,11 @@ declare module "next-auth" {
   interface Session {
     user?: {
       id: string;
-      currentMonthlyBudgetId: number
+      currentBudgetAccount: number
     } & DefaultSession["user"];
+  }
+
+  interface User {
+    currentBudgetAccountID: number
   }
 }

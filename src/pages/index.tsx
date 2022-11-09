@@ -66,10 +66,13 @@ const AuthShowcase: React.FC = () => {
 
   const { data: sessionData } = useSession();
 
+  console.log(sessionData);
+
   return (
     <div className="flex flex-col items-center justify-center gap-2">
       {sessionData && (
         <p className="text-2xl text-blue-500">
+            Yoyoyoy {sessionData?.user?.currentBudgetAccount}
           Logged in as {sessionData?.user?.name}
         </p>
       )}

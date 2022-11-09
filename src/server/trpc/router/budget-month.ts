@@ -10,24 +10,8 @@ export const budgetMonthRouter = router({
             return await budgetMonthService.create();
         }),
     getCurrent: protectedProcedure
-        .input(z.object({id: z.number()}))
         .query(async ({ input, ctx }) => {
             const userSession = ctx.session.user;
             return await budgetMonthService.getCurrent(userSession.id)
-
-            // if (!user.currentMonthlyBudgetId) {
-            //     const monthlyBudget = ctx.prisma.monthlyBudget.create({
-            //
-            //     });
-            // }
-
-            return ctx.prisma.monthlyBudget.findUnique({
-                where: {
-                    id: input.id
-                },
-                include: {
-                    budgetGroup: true
-                }
-            })
-    }),
+        }),
 });

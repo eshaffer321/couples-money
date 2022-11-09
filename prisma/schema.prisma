@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["interactiveTransactions"]
 }
 
@@ -49,18 +49,18 @@ model Session {
 }
 
 model User {
-  id                     String         @id @default(cuid())
   name                   String?
-  email                  String?        @unique
+  id                     String          @id @default(cuid())
+  email                  String?         @unique
   emailVerified          DateTime?
   image                  String?
   accounts               Account[]
   sessions               Session[]
-  currentMonthlyBudget   MonthlyBudget? @relation(fields: [monthlyBudgetId], references: [id])
-  currentMonthlyBudgetId Int?
+  currentBudgetAccount   BudgetAccount?  @relation(fields: [currentBudgetAccountID], references: [id])
+  currentBudgetAccountID Int?
   monthlyBudgetId        Int?
   PlaidLink              PlaidLink[]
-  budgetAccounts          BudgetAccount[]
+  budgetAccounts         BudgetAccount[] @relation("allowableBudgetAccounts")
 }
 
 model VerificationToken {
@@ -78,7 +78,6 @@ model MonthlyBudget {
   budgetAccount   BudgetAccount         @relation(fields: [budgetAccountId], references: [id])
   budgetAccountId Int
   budgetGroup     BudgetItemContainer[]
-  user            User[]
 }
 
 // Login to a financial institution. May include more than one account.
@@ -93,9 +92,11 @@ model PlaidLink {
 
 model BudgetAccount {
   id            Int             @id @default(autoincrement())
-  users          User[]
+  users         User[]
+  user          User            @relation("allowableBudgetAccounts", fields: [userId], references: [id])
   monthlyBudget MonthlyBudget[]
   plaidlinks    PlaidLink[]
+  userId        String
 }
 
 model BudgetItemContainer {

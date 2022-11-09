@@ -6,7 +6,7 @@ export const exampleRouter = router({
     .input(z.object({ text: z.string().nullish() }).nullish())
     .query(({ input }) => {
       return {
-        greeting: `Hello ${input?.text ?? "world"}`,
+        greeting: `Helloooooo ${input?.text ?? "world"}`,
       };
     }),
   getAll: publicProcedure.query(async ({ ctx }) => {

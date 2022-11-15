@@ -1,14 +1,11 @@
 import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import { PlusIcon as PlusIconMini } from '@heroicons/react/20/solid'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import SimpleSelectMenu from "../components/SimpleSelectMenu";
-import CustomerDropDown from "../components/CustomDropDown";
-import BudgetMonthCard from "../components/BudgetMonthCard";
-import CardWithDividers from "../components/CardWithDividers";
 import SeparateCards from "../components/SeparateCards";
-import MonthSelectMinimalDropdown from '../components/MonthSelectMinimalDropDown';
+
+import { trpc } from "../utils/trpc";
 
 const user = {
   name: 'Tom Cook',
@@ -33,7 +30,20 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function Example() {
+export default function App() {
+
+  const {data, isLoading, error} = trpc.budgetMonth.getCurrent.useQuery({});
+
+  const res = trpc.budgetMonth.getBudgetMonthOptions.useQuery();
+
+  if (isLoading) { return "Loading..."}
+
+  if (error) { return "Error" }
+
+  console.log(data)
+
+
+  console.log(data)
   return (
     <>
       {/*

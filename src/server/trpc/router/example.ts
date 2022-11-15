@@ -10,8 +10,6 @@ export const exampleRouter = router({
       };
     }),
   getAll: publicProcedure.query(async ({ ctx }) => {
-      const examples = await ctx.prisma.example.findMany();
-
     return ctx.prisma.example.findMany();
   }),
 });

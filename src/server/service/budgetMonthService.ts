@@ -1,51 +1,101 @@
-import {userService} from "./userService";
 import {prisma} from "../db/client";
-import { Prisma } from '@prisma/client';
+import dayjs from 'dayjs';
 
+
+export interface BudgetMonthSelectOption {
+  id: string,
+  isCurrent: boolean,
+  displayName: string
+};
 
 class BudgetMonthService {
-    // get the last budget month the user was looking at
-    public async getCurrent (id: string) {
-        // const userSelect : Prisma.UserSelect = {budgetAccounts: true, currentMonthlyBudgetId: true}
-        // const user = await userService.getUserById(id, userSelect);
-        //
-        // if (!user) { return {error: "User not found"} }
-        //
-        // user.budgetAccounts
-        //
-        // if ( user.budgetAccounts.length === 0 )
+  public async getCurrent (currentBudgetAccountId: number, month?: string) {
+    if (month) {
+      const monthlyBudgetByMonth = await prisma.monthlyBudget.findFirst({
+        where: {
+          budgetAccountId: currentBudgetAccountId,
+          name: month
+        }
+      });
 
-        // const budgetMonths
+      return monthlyBudgetByMonth;
+    }
+    const monthlyBudgetByCurrent = await prisma.monthlyBudget.findFirst({
+        where: {
+        budgetAccountId: currentBudgetAccountId,
+        name: getCurrentMonthString() 
+      }
+    });
 
-        //
-        // if (!user.currentMonthlyBudgetId) {
-        //     const newBudgetMonth = await prisma.monthlyBudget.create({
-        //         data: {}
-        //     });
-        // }
-
-        // console.log(user)
+    if (!monthlyBudgetByCurrent) {
+      return await prisma.monthlyBudget.create({
+        data: {
+          name: getCurrentMonthString(),
+          firstDayOfMonth: getCurrentMonthString(), 
+          budgetAccount: {
+            connect: {
+              id: currentBudgetAccountId
+            }
+          }
+        }
+      });
     }
 
+    return monthlyBudgetByCurrent
 
-    public async create() {
-        // return await prisma.monthlyBudget.create({
-        //     data: {}
-        // })
-    }
+  }
+
+  public async getBudgetMonthOptions() {
+    return getListOfBudgetMonths(6);
+  }
+
+  public async create() {
+    // return await prisma.monthlyBudget.create({
+    //     data: {}
+    // })
+  }
+
+  public async copy() {}
 }
 
-const getCurrentMonthlyBudgetString = () => {
-    const now = new Date();
-    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toLocaleDateString();
-    return firstDay.replaceAll("/", "")
+const getListOfBudgetMonths = (amountOfMonths: number) => {
+  let months: number = ~~(amountOfMonths/2);
+  const monthList: BudgetMonthSelectOption[] = [];
+  for (let i = months * -1; i < months; i++) {
+    const date = dayjs().add(i, 'M');
+
+    const option: BudgetMonthSelectOption = {
+      id: [date.month(), date.year()].join("-"),
+      isCurrent: false,
+      displayName: date.format('MMM YYYY')
+    }
+
+    monthList.push(option);
+  }
+  return monthList; 
+}
+
+const getCurrentDateString = () => {
+  const now = new Date();
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toLocaleDateString();
+  return firstDay.replaceAll("/", "")
+};
+
+const getCurrentMonthString = () => {
+  const date = dayjs();
+  const option: BudgetMonthSelectOption = {
+    id: [date.month(), date.year].join("-"),
+    isCurrent: true,
+    displayName: date.format("MMM YYYY")
+  }
+  return option;
 };
 
 const getLastDayOfCurrentMonth = () => {
-    const now = new Date();
-    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toLocaleDateString();
-    return lastDay.replaceAll("/", "")
+  const now = new Date();
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toLocaleDateString();
+  return lastDay.replaceAll("/", "")
 };
 
-export {getCurrentMonthlyBudgetString, getLastDayOfCurrentMonth};
+export {getCurrentDateString, getLastDayOfCurrentMonth};
 export const budgetMonthService = new BudgetMonthService();

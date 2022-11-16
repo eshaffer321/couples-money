@@ -41,7 +41,7 @@ export default function BudgetMonthCard() {
 
       </div>
 
-      {/* Budget Items */}
+      {/* Budget Items*/}
       <AnimatePresence initial={true}>
         {expanded && (
           <motion.section

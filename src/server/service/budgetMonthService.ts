@@ -9,7 +9,9 @@ export interface BudgetMonthSelectOption {
 };
 
 class BudgetMonthService {
+
   public async getCurrent (currentBudgetAccountId: number, month?: string) {
+
     if (month) {
       const monthlyBudgetByMonth = await prisma.monthlyBudget.findFirst({
         where: {
@@ -17,21 +19,21 @@ class BudgetMonthService {
           name: month
         }
       });
-
       return monthlyBudgetByMonth;
     }
+
     const monthlyBudgetByCurrent = await prisma.monthlyBudget.findFirst({
         where: {
         budgetAccountId: currentBudgetAccountId,
-        name: getCurrentMonthString() 
+        name: getCurrentMonthString().id 
       }
     });
 
     if (!monthlyBudgetByCurrent) {
       return await prisma.monthlyBudget.create({
         data: {
-          name: getCurrentMonthString(),
-          firstDayOfMonth: getCurrentMonthString(), 
+          name: getCurrentMonthString().id,
+          firstDayOfMonth: getCurrentMonthString().id, 
           budgetAccount: {
             connect: {
               id: currentBudgetAccountId
@@ -42,7 +44,6 @@ class BudgetMonthService {
     }
 
     return monthlyBudgetByCurrent
-
   }
 
   public async getBudgetMonthOptions() {
@@ -61,12 +62,16 @@ class BudgetMonthService {
 const getListOfBudgetMonths = (amountOfMonths: number) => {
   let months: number = ~~(amountOfMonths/2);
   const monthList: BudgetMonthSelectOption[] = [];
+  const today = dayjs();
   for (let i = months * -1; i < months; i++) {
     const date = dayjs().add(i, 'M');
-
+    let isCurrent = false;
+    if (date.month() == today.month() && date.year() == today.year()) {
+      isCurrent = true;     
+    }
     const option: BudgetMonthSelectOption = {
       id: [date.month(), date.year()].join("-"),
-      isCurrent: false,
+      isCurrent: isCurrent,
       displayName: date.format('MMM YYYY')
     }
 

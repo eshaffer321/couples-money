@@ -43,7 +43,7 @@ export default function App() {
   console.log(data)
 
 
-  console.log(data)
+  console.log(res)
   return (
     <>
       {/*

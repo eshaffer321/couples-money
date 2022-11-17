@@ -1,10 +1,11 @@
-import { useRef } from 'react'
 import { Dialog } from '@headlessui/react'
 import { PlusIcon } from '@heroicons/react/24/outline'
 
-export default function NewBudgetItemModal({open: boolean, setOpen}) {
-
-  const cancelButtonRef = useRef(null)
+interface Props {
+  open: boolean,
+  setOpen(value: boolean): any
+}
+export default function NewBudgetItemModal(props: Props) {
 
   return (
     <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
@@ -71,15 +72,15 @@ export default function NewBudgetItemModal({open: boolean, setOpen}) {
         <button
           type="button"
           className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
-          onClick={() => setOpen(false)}
+          onClick={() => props.setOpen(false)}
         >
           Create 
         </button>
         <button
           type="button"
           className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm"
-          onClick={() => setOpen(false)}
-          ref={cancelButtonRef}
+          onClick={() => props.setOpen(false)}
+          // innerref={cancelButtonRef}
         >
           Cancel
         </button>

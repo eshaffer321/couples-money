@@ -1,17 +1,20 @@
-import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 
-export default function Modal(props) {
-  const [open, setOpen] = useState(true);
-  const cancelButtonRef = useRef(null);
+
+interface ModalProps {
+  children: any
+  open: boolean,
+  setOpen(set: boolean): any;
+};
+
+export default function Modal(props: ModalProps) {
 
   return (
-    <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={setOpen}>
+    <Transition.Root show={props.open} >
+      <Dialog as="div" className="relative z-10" onClose={props.setOpen(false)}>
 
         {/* Transition for the background */}
         <Transition.Child
-          as={Fragment}
           enter="ease-out duration-300"
           enterFrom="opacity-0"
           enterTo="opacity-100"
@@ -27,7 +30,6 @@ export default function Modal(props) {
 
             {/* Transition for the content */}
             <Transition.Child
-              as={Fragment}
               enter="ease-out duration-300"
               enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
               enterTo="opacity-100 translate-y-0 sm:scale-100"

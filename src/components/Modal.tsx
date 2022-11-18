@@ -11,7 +11,7 @@ export default function Modal(props: ModalProps) {
 
   return (
     <Transition.Root show={props.open} >
-      <Dialog as="div" className="relative z-10" onClose={props.setOpen(false)}>
+      <Dialog as="div" className="relative z-10" onClose={() => props.setOpen(false)}>
 
         {/* Transition for the background */}
         <Transition.Child

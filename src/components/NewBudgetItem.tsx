@@ -1,14 +1,10 @@
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import NewBudgetItemModal from "./NewBudgetItemModal"
 import Modal from "./Modal";
 
 export default function NewBudgetItem() {
 
   const [isModalOpen, setModal] = useState(false);
-
-  useEffect(() => {
-    setModal(false);
-  }, [])
 
   return (
     <>

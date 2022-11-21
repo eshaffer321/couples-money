@@ -46,10 +46,12 @@ export default function App() {
     return "Error";
   }
 
+  if (res.isLoading) {
+    return "Loading..."
+  }
 
   console.log(data);
 
-  console.log(res);
   return (
     <>
       {/*
@@ -78,6 +80,8 @@ This example requires updating your template:
                           alt="Your Company"
                         />
                       </div>
+
+                      {/* Desktop Top bar navigation items */}
                       <div className="hidden lg:ml-10 lg:block">
                         <div className="flex space-x-4">
                           {navigation.map((item) => (
@@ -106,11 +110,12 @@ This example requires updating your template:
                           Search
                         </label>
                         <div className="relative text-gray-400 focus-within:text-gray-600">
-                          <SimpleSelectMenu></SimpleSelectMenu>
+                          <SimpleSelectMenu options={res.data}></SimpleSelectMenu>
                         </div>
                       </div>
                     </div>
 
+                    {/* Top bar search and plus icon */}
                     <div className="flex flex-1 justify-center px-2 lg:ml-6 lg:justify-end">
                       <div className="w-full max-w-md lg:max-w-xs">
                         <label htmlFor="search" className="sr-only">
@@ -178,6 +183,8 @@ This example requires updating your template:
                             leaveFrom="transform opacity-100 scale-100"
                             leaveTo="transform opacity-0 scale-95"
                           >
+
+                            {/* Popup profile settings Desktop clicking avatar */}
                             <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                               {userNavigation.map((item) => (
                                 <Menu.Item key={item.name}>
@@ -195,6 +202,7 @@ This example requires updating your template:
                                 </Menu.Item>
                               ))}
                             </Menu.Items>
+                            
                           </Transition>
                         </Menu>
                       </div>
@@ -203,6 +211,8 @@ This example requires updating your template:
                 </div>
 
                 <Disclosure.Panel className="lg:hidden">
+
+                  {/* Mobile menu navigation options */}
                   <div className="space-y-1 px-2 pt-2 pb-3">
                     {navigation.map((item) => (
                       <Disclosure.Button
@@ -217,11 +227,15 @@ This example requires updating your template:
                         )}
                         aria-current={item.current ? "page" : undefined}
                       >
+                        {"test"}
                         {item.name}
                       </Disclosure.Button>
                     ))}
                   </div>
+
                   <div className="border-t border-indigo-700 pt-4 pb-3">
+
+                    {/* User profile in mobile navigation menu */}
                     <div className="py flex items-center px-5">
                       <div className="flex-shrink-0">
                         <img
@@ -246,6 +260,8 @@ This example requires updating your template:
                         <BellIcon className="h-6 w-6" aria-hidden="true" />
                       </button>
                     </div>
+
+                    {/* Mobile menu user setting navigation options */}
                     <div className="mt-3 space-y-1 px-2">
                       {userNavigation.map((item) => (
                         <Disclosure.Button
@@ -258,6 +274,7 @@ This example requires updating your template:
                         </Disclosure.Button>
                       ))}
                     </div>
+
                   </div>
                 </Disclosure.Panel>
               </>

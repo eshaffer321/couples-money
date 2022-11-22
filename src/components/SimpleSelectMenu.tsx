@@ -8,21 +8,28 @@ function classNames(...classes: string[]) {
 }
 
 interface Props {
-  options: BudgetMonthSelectOption[]
+  options?: BudgetMonthSelectOption[];
+  selectedMonth?: BudgetMonthSelectOption;
+  setSelectedMonth: any
 }
 export default function SimpleSelectMenu(props: Props) {
-  const {options} = props;
+  const {options, selectedMonth, setSelectedMonth} = props;
 
-  const current = options.filter(x => x.isCurrent)[0];
+  if (selectedMonth == null) {
+    const current = options?.filter(x => x.isCurrent)[0];
+    setSelectedMonth(current);
+  }
 
-  const [selected, setSelected] = useState(current);
+  if (selectedMonth === undefined ){
+    return "Loading..."
+  }
   return (
-    <Listbox value={selected} onChange={setSelected}>
+    <Listbox value={selectedMonth} onChange={setSelectedMonth}>
       {({ open }) => (
         <>
           <div className="relative mt-1">
             <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
-              <span className="block truncate">{selected?.displayName}</span>
+              <span className="block truncate">{selectedMonth?.displayName}</span>
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                 <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
               </span>

@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { PlusIcon as PlusIconMini } from "@heroicons/react/20/solid";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
@@ -34,23 +34,21 @@ function classNames(...classes: string[]) {
 
 export default function App() {
   const [monthSelectModalOpen, setMonthSelectModal] = useState(false);
-  const { data, isLoading, error } = trpc.budgetMonth.getCurrent.useQuery({});
+  const [selectedMonth, setSelectedMonth] = useState(undefined);
+  const [budgetMonth, setBudgetMonth] = useState(null);
 
-  const res = trpc.budgetMonth.getBudgetMonthOptions.useQuery();
+  const getCurrentRes = trpc.budgetMonth.getCurrent.useQuery({});
+  const getMonthOptionsRes = trpc.budgetMonth.getBudgetMonthOptions.useQuery();
 
-  if (isLoading) {
-    return "Loading...";
-  }
-
-  if (error) {
-    return "Error";
-  }
-
-  if (res.isLoading) {
-    return "Loading..."
-  }
-
-  console.log(data);
+  useEffect(() =>{
+      if(getMonthOptionsRes.data) {
+        const options = getMonthOptionsRes?.data;
+        if (options && options.length > 0) {
+          setSelectedMonth(options[0]);
+      console.log("Updated selected month is " + selectedMonth?.displayName);
+        }
+      }
+  }, [selectedMonth]);
 
   return (
     <>
@@ -110,7 +108,10 @@ This example requires updating your template:
                           Search
                         </label>
                         <div className="relative text-gray-400 focus-within:text-gray-600">
-                          <SimpleSelectMenu options={res.data}></SimpleSelectMenu>
+                          <SimpleSelectMenu 
+                          selectedMonth={selectedMonth}
+                          setSelectedMonth={setSelectedMonth}
+                          options={getMonthOptionsRes.data}></SimpleSelectMenu>
                         </div>
                       </div>
                     </div>
@@ -303,7 +304,7 @@ This example requires updating your template:
         <main className="-mt-32">
           <div className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
             {/* Replace with your content */}
-            <SeparateCards></SeparateCards>
+            <SeparateCards budgetMonthItems={getCurrentRes}></SeparateCards>
             {/* /End replace */}
           </div>
         </main>

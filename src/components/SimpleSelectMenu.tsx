@@ -9,20 +9,16 @@ function classNames(...classes: string[]) {
 
 interface Props {
   options?: BudgetMonthSelectOption[];
-  selectedMonth?: BudgetMonthSelectOption;
+  selectedMonth?: BudgetMonthSelectOption | undefined;
   setSelectedMonth: any
 }
 export default function SimpleSelectMenu(props: Props) {
   const {options, selectedMonth, setSelectedMonth} = props;
 
-  if (selectedMonth == null) {
-    const current = options?.filter(x => x.isCurrent)[0];
-    setSelectedMonth(current);
+  if (selectedMonth === undefined) {
+    setSelectedMonth(options?.filter(x=>x.isCurrent)[0]);
   }
 
-  if (selectedMonth === undefined ){
-    return "Loading..."
-  }
   return (
     <Listbox value={selectedMonth} onChange={setSelectedMonth}>
       {({ open }) => (

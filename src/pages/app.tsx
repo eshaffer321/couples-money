@@ -8,6 +8,7 @@ import SeparateCards from "../components/SeparateCards";
 import { trpc } from "../utils/trpc";
 import SelectMonthModalTest from "../components/SelectMonthModal";
 import Modal from "../components/Modal";
+import { BudgetMonthSelectOption } from "../server/service/budgetMonthService";
 
 const user = {
   name: "Tom Cook",
@@ -40,14 +41,11 @@ export default function App() {
   const getCurrentRes = trpc.budgetMonth.getCurrent.useQuery({});
   const getMonthOptionsRes = trpc.budgetMonth.getBudgetMonthOptions.useQuery();
 
-  useEffect(() =>{
-      if(getMonthOptionsRes.data) {
-        const options = getMonthOptionsRes?.data;
-        if (options && options.length > 0) {
-          setSelectedMonth(options[0]);
-      console.log("Updated selected month is " + selectedMonth?.displayName);
-        }
-      }
+  useEffect(() => {
+    const param = ((selectedMonth && selectedMonth.name) ? {name: selectedMonth.name} : {});
+    const budgetQuery = trpc.budgetMonth.getCurrent.useQuery(param);
+
+
   }, [selectedMonth]);
 
   return (
@@ -108,10 +106,15 @@ This example requires updating your template:
                           Search
                         </label>
                         <div className="relative text-gray-400 focus-within:text-gray-600">
-                          <SimpleSelectMenu 
-                          selectedMonth={selectedMonth}
-                          setSelectedMonth={setSelectedMonth}
-                          options={getMonthOptionsRes.data}></SimpleSelectMenu>
+                          {!getMonthOptionsRes.data ? (
+                            <p>Loading...</p>
+                          ) : (
+                            <SimpleSelectMenu
+                              selectedMonth={selectedMonth}
+                              setSelectedMonth={setSelectedMonth}
+                              options={getMonthOptionsRes.data}
+                            ></SimpleSelectMenu>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -184,7 +187,6 @@ This example requires updating your template:
                             leaveFrom="transform opacity-100 scale-100"
                             leaveTo="transform opacity-0 scale-95"
                           >
-
                             {/* Popup profile settings Desktop clicking avatar */}
                             <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                               {userNavigation.map((item) => (
@@ -203,7 +205,6 @@ This example requires updating your template:
                                 </Menu.Item>
                               ))}
                             </Menu.Items>
-                            
                           </Transition>
                         </Menu>
                       </div>
@@ -212,7 +213,6 @@ This example requires updating your template:
                 </div>
 
                 <Disclosure.Panel className="lg:hidden">
-
                   {/* Mobile menu navigation options */}
                   <div className="space-y-1 px-2 pt-2 pb-3">
                     {navigation.map((item) => (
@@ -235,7 +235,6 @@ This example requires updating your template:
                   </div>
 
                   <div className="border-t border-indigo-700 pt-4 pb-3">
-
                     {/* User profile in mobile navigation menu */}
                     <div className="py flex items-center px-5">
                       <div className="flex-shrink-0">
@@ -275,7 +274,6 @@ This example requires updating your template:
                         </Disclosure.Button>
                       ))}
                     </div>
-
                   </div>
                 </Disclosure.Panel>
               </>

@@ -6,7 +6,15 @@ const items = [
     // More items...
 ]
 
-export default function SeparateCards() {
+export default function SeparateCards(props: any) {
+    if (props.isLoading) {
+        return "Loading..."
+    }
+
+    if (props.error) {
+        return "Error"
+    }
+    
     return (
         <ul role="list" className="space-y-4">
             {items.map((item) => (

@@ -1,3 +1,4 @@
+import { MonthlyBudget } from "@prisma/client";
 import BudgetMonthCard from "./BudgetMonthCard";
 
 const items = [
@@ -5,16 +6,11 @@ const items = [
     {id: 2}
     // More items...
 ]
+interface Props {
+    budget: MonthlyBudget
+}
 
-export default function SeparateCards(props: any) {
-    if (props.isLoading) {
-        return "Loading..."
-    }
-
-    if (props.error) {
-        return "Error"
-    }
-    
+export default function SeparateCards(props: Props) {
     return (
         <ul role="list" className="space-y-4">
             {items.map((item) => (

@@ -9,6 +9,8 @@ import { trpc } from "../utils/trpc";
 import SelectMonthModalTest from "../components/SelectMonthModal";
 import Modal from "../components/Modal";
 import { BudgetMonthSelectOption } from "../server/service/budgetMonthService";
+import PageHeader from "../components/PageHeader";
+import { MonthlyBudget } from "@prisma/client";
 
 const user = {
   name: "Tom Cook",
@@ -35,18 +37,20 @@ function classNames(...classes: string[]) {
 
 export default function App() {
   const [monthSelectModalOpen, setMonthSelectModal] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState(undefined);
-  const [budgetMonth, setBudgetMonth] = useState(null);
+  const [selectedMonth, setSelectedMonth] = useState<BudgetMonthSelectOption|undefined>(undefined);
+  const [budgetMonth, setBudgetMonth] = useState<MonthlyBudget|null>(null);
 
-  const getCurrentRes = trpc.budgetMonth.getCurrent.useQuery({});
   const getMonthOptionsRes = trpc.budgetMonth.getBudgetMonthOptions.useQuery();
 
-  useEffect(() => {
-    const param = ((selectedMonth && selectedMonth.name) ? {name: selectedMonth.name} : {});
-    const budgetQuery = trpc.budgetMonth.getCurrent.useQuery(param);
-
-
-  }, [selectedMonth]);
+  trpc.budgetMonth.getBudgetMonth.useQuery(
+    { month: selectedMonth?.displayName },
+    {
+      enabled: Boolean(selectedMonth?.displayName),
+      onSuccess(data) {
+        setBudgetMonth(data);
+      },
+    }
+  );
 
   return (
     <>
@@ -280,29 +284,17 @@ This example requires updating your template:
             )}
           </Disclosure>
 
-          {/* Page Header */}
-          <header className="py-10">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <h1 className="text-3xl font-bold tracking-tight text-white">
-                April 2022
-              </h1>
-              <Modal open={monthSelectModalOpen} setOpen={setMonthSelectModal}>
-                <SelectMonthModalTest
-                  open={monthSelectModalOpen}
-                  setOpen={setMonthSelectModal}
-                ></SelectMonthModalTest>
-              </Modal>
-              <button onClick={() => setMonthSelectModal(true)}>
-                my modal button
-              </button>
-            </div>
-          </header>
+          {selectedMonth?.displayName && (
+            <PageHeader headerName={selectedMonth.displayName}></PageHeader>
+          )}
         </div>
 
         <main className="-mt-32">
           <div className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
             {/* Replace with your content */}
-            <SeparateCards budgetMonthItems={getCurrentRes}></SeparateCards>
+            {budgetMonth && (
+              <SeparateCards budgetMonthItems={budgetMonth}></SeparateCards>
+            )}
             {/* /End replace */}
           </div>
         </main>

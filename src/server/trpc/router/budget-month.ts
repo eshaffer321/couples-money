@@ -8,11 +8,11 @@ export const budgetMonthRouter = router({
   .mutation(async ({ input, ctx }) => {
     return await budgetMonthService.create();
   }),
-  getCurrent: protectedProcedure
+  getBudgetMonth: protectedProcedure
   .input(z.object({ month: z.string().optional() }).nullish())
   .query(async ({ input, ctx }) => {
     const userSession = ctx.session.user;
-    return await budgetMonthService.getCurrent(userSession.currentBudgetAccount, input?.month);
+    return await budgetMonthService.getBudgetMonth(userSession.currentBudgetAccount, input?.month);
   }),
   getBudgetMonthOptions: protectedProcedure
   .query(async() => {

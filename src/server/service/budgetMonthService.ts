@@ -8,7 +8,12 @@ export interface BudgetMonthSelectOption {
 }
 
 class BudgetMonthService {
-  public async getCurrent(currentBudgetAccountId: number, month?: string) {
+
+  // TODO: This should just return the budget by month.
+  // The client should handle creating a new budet month if one doesn't exist.
+  public async getBudgetMonth(currentBudgetAccountId: number, month?: string) {
+
+    console.log("Getting budget month by currentBudgetAccountId: " + currentBudgetAccountId + " month: " + month )
     if (month) {
       const monthlyBudgetByMonth = await prisma.monthlyBudget.findFirst({
         where: {

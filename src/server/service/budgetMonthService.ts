@@ -59,12 +59,16 @@ class BudgetMonthService {
   }
 
   public async create() {
-    // return await prisma.monthlyBudget.create({
-    //     data: {}
-    // })
+    return await prisma.monthlyBudget.create({
+        data: {}
+    })
   }
 
   public async copy() {}
+}
+
+const isValidBudgetMonth= (monthYear: string) {
+  
 }
 
 const getListOfBudgetMonths = (amountOfMonths: number) => {
@@ -88,16 +92,6 @@ const getListOfBudgetMonths = (amountOfMonths: number) => {
   return monthList;
 };
 
-const getCurrentDateString = () => {
-  const now = new Date();
-  const firstDay = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    1
-  ).toLocaleDateString();
-  return firstDay.replaceAll("/", "");
-};
-
 const getCurrentMonthString = () => {
   const date = dayjs();
   const option: BudgetMonthSelectOption = {
@@ -108,15 +102,4 @@ const getCurrentMonthString = () => {
   return option;
 };
 
-const getLastDayOfCurrentMonth = () => {
-  const now = new Date();
-  const lastDay = new Date(
-    now.getFullYear(),
-    now.getMonth() + 1,
-    0
-  ).toLocaleDateString();
-  return lastDay.replaceAll("/", "");
-};
-
-export { getCurrentDateString, getLastDayOfCurrentMonth };
 export const budgetMonthService = new BudgetMonthService();

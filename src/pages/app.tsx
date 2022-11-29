@@ -11,6 +11,7 @@ import Modal from "../components/Modal";
 import { BudgetMonthSelectOption } from "../server/service/budgetMonthService";
 import PageHeader from "../components/PageHeader";
 import { MonthlyBudget } from "@prisma/client";
+import EmptyBudgetMonthCard from "../components/EmptyBudgetMonth";
 
 const user = {
   name: "Tom Cook",
@@ -289,13 +290,15 @@ This example requires updating your template:
           )}
         </div>
 
+        {/* Main Content */}
         <main className="-mt-32">
           <div className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
-            {/* Replace with your content */}
-            {budgetMonth && (
-              <SeparateCards budgetMonthItems={budgetMonth}></SeparateCards>
-            )}
-            {/* /End replace */}
+
+            {
+              budgetMonth ?
+               <SeparateCards budget={budgetMonth}></SeparateCards> : <EmptyBudgetMonthCard monthName={selectedMonth?.displayName}></EmptyBudgetMonthCard>
+            }
+
           </div>
         </main>
       </div>

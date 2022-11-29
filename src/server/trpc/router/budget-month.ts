@@ -2,9 +2,14 @@ import {router, protectedProcedure} from "../trpc";
 import { z } from "zod";
 import {budgetMonthService} from "../../service/budgetMonthService";
 
+const isValidBudgetMonth = (val: string) => {
+  return true;
+}
 export const budgetMonthRouter = router({
   create: protectedProcedure
-  .input(z.object({ name: z.string() }))
+  .input(z.object(
+    { name: z.string().refine((val) => isValidBudgetMonth(val), {messsage: "Invalid budget month passed"}) }
+    ))
   .mutation(async ({ input, ctx }) => {
     return await budgetMonthService.create();
   }),

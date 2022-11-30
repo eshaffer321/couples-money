@@ -38,15 +38,17 @@ function classNames(...classes: string[]) {
 
 export default function App() {
   const [monthSelectModalOpen, setMonthSelectModal] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState<BudgetMonthSelectOption|undefined>(undefined);
-  const [budgetMonth, setBudgetMonth] = useState<MonthlyBudget|null>(null);
+  const [selectedMonth, setSelectedMonth] = useState<
+    BudgetMonthSelectOption | undefined
+  >(undefined);
+  const [budgetMonth, setBudgetMonth] = useState<MonthlyBudget | null>(null);
 
   const getMonthOptionsRes = trpc.budgetMonth.getBudgetMonthOptions.useQuery();
 
   trpc.budgetMonth.getBudgetMonth.useQuery(
-    { month: selectedMonth?.displayName },
+    { monthYearId: selectedMonth?.monthYear ? selectedMonth.monthYearId : "" },
     {
-      enabled: Boolean(selectedMonth?.displayName),
+      enabled: Boolean(selectedMonth?.monthYearId),
       onSuccess(data) {
         setBudgetMonth(data);
       },
@@ -293,12 +295,14 @@ This example requires updating your template:
         {/* Main Content */}
         <main className="-mt-32">
           <div className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
-
-            {
-              budgetMonth ?
-               <SeparateCards budget={budgetMonth}></SeparateCards> : <EmptyBudgetMonthCard monthName={selectedMonth?.displayName}></EmptyBudgetMonthCard>
-            }
-
+            {budgetMonth ? (
+              <SeparateCards budget={budgetMonth}></SeparateCards>
+            ) : (
+              <EmptyBudgetMonthCard
+                selectedBudgetMonth={selectedMonth}
+                setBudgetMonth={setBudgetMonth}
+              ></EmptyBudgetMonthCard>
+            )}
           </div>
         </main>
       </div>

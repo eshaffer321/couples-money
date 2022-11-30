@@ -1,26 +1,22 @@
 import {router, protectedProcedure} from "../trpc";
 import { z } from "zod";
-import {budgetMonthService} from "../../service/budgetMonthService";
+import {budgetMonthService, isValidBudgetMonth} from "../../service/budgetMonthService";
 
-const isValidBudgetMonth = (val: string) => {
-  return true;
-}
+const monthYearIdValidation = z.object({ monthYearId: z.string().refine((val) => isValidBudgetMonth(val)) });
+
 export const budgetMonthRouter = router({
   create: protectedProcedure
-  .input(z.object(
-    { name: z.string().refine((val) => isValidBudgetMonth(val), {messsage: "Invalid budget month passed"}) }
-    ))
+  .input(monthYearIdValidation)
   .mutation(async ({ input, ctx }) => {
-    return await budgetMonthService.create();
+    const userSession = ctx.session.user;
+    return await budgetMonthService.create(userSession.currentBudgetAccount, input.monthYearId);
   }),
   getBudgetMonth: protectedProcedure
-  .input(z.object({ month: z.string().optional() }).nullish())
+  .input(monthYearIdValidation)
   .query(async ({ input, ctx }) => {
     const userSession = ctx.session.user;
-    return await budgetMonthService.getBudgetMonth(userSession.currentBudgetAccount, input?.month);
+    return await budgetMonthService.getBudgetMonth(userSession.currentBudgetAccount, input.monthYearId);
   }),
   getBudgetMonthOptions: protectedProcedure
-  .query(async() => {
-    return await budgetMonthService.getBudgetMonthOptions();
-  })
+  .query(async() => await budgetMonthService.getBudgetMonthOptions())
 });

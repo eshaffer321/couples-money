@@ -1,21 +1,20 @@
-import { MonthlyBudget } from "@prisma/client";
+import { BudgetItemContainer, MonthlyBudget } from "@prisma/client";
 import BudgetMonthCard from "./BudgetMonthCard";
 
-const items = [
-    { id: 1 },
-    {id: 2}
-    // More items...
-]
 interface Props {
-    budget: MonthlyBudget
+    budget: MonthlyBudget & {
+        budgetGroup: BudgetItemContainer[];
+    } 
 }
 
 export default function SeparateCards(props: Props) {
+    const {budget} = props;
+    console.log(budget);
     return (
         <ul role="list" className="space-y-4">
-            {items.map((item) => (
+            {budget.budgetGroup.map((item) => (
                 <li key={item.id} className="overflow-hidden bg-white shadow rounded-md py-5 px-4">
-                    <BudgetMonthCard></BudgetMonthCard>
+                    <BudgetMonthCard budgetItemContainer={item}></BudgetMonthCard>
                 </li>
             ))}
         </ul>

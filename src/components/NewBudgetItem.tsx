@@ -1,10 +1,20 @@
 import {useState} from "react";
 import NewBudgetItemModal from "./NewBudgetItemModal"
 import Modal from "./Modal";
+import {trpc} from "../utils/trpc";
 
-export default function NewBudgetItem() {
+interface Props {
+  budgetItemContainerId: number,
+  budgetItemContainerName: string
+}
+export default function NewBudgetItem(props: Props) {
 
   const [isModalOpen, setModal] = useState(false);
+
+  const createNewBudgetItem = () => {
+
+
+  }
 
   return (
     <>

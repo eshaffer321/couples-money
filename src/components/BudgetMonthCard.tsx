@@ -2,6 +2,7 @@ import {ChevronDownIcon, PencilIcon} from '@heroicons/react/20/solid'
 import NewBudgetItem from "./NewBudgetItem";
 import {AnimatePresence, motion} from "framer-motion";
 import {useState} from "react";
+import { BudgetItemContainer } from '@prisma/client';
 
 const items = [
   { id: 1 },
@@ -9,8 +10,12 @@ const items = [
   { id: 3 },
   // More items...
 ]
-export default function BudgetMonthCard() {
 
+interface Props {
+  budgetItemContainer: BudgetItemContainer
+}
+export default function BudgetMonthCard(props: Props) {
+  const {budgetItemContainer} = props;
   const [expanded, setExpanded] = useState(true);
 
   return (
@@ -21,7 +26,7 @@ export default function BudgetMonthCard() {
         <div className="ml-4 mt-4">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              Food
+            {budgetItemContainer.name} 
             </div>
             <motion.div className="pt-2" initial={true} onClick={()=> {setExpanded(!expanded)}}>
               <button>
@@ -32,6 +37,7 @@ export default function BudgetMonthCard() {
         </div>
 
         {/*Budgeted Amount*/}
+        {/* TODO:// Calculate the amounts from budget items */}
         <div className="ml-4 mt-4 flex flex-shrink-0">
           <PencilIcon className="-ml-1 mr-2 h-5 w-5 text-gray-400" aria-hidden="true" />
           <div className="items-center inline-flex">

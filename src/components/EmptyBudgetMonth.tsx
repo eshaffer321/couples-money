@@ -17,7 +17,6 @@ export default function EmptyBudgetMonthCard(props: Props) {
   }
   
   const createMutation = trpc.budgetMonth.create.useMutation({onSuccess(data, variables, context) {
-     console.log(setBudgetMonth);
      setBudgetMonth(data);
   },});
 

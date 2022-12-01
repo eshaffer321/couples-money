@@ -12,7 +12,7 @@ class BudgetAccountService {
 
     if (user?.currentBudgetAccountID) {
       console.debug("Returning current Budget Account found in user row")
-      return user?.currentBudgetAccountID
+      return user.currentBudgetAccountID
     }
 
     if (user?.budgetAccounts.length === 0) {
@@ -20,7 +20,7 @@ class BudgetAccountService {
       const newBudgetAccount = await prisma.budgetAccount.create({
         data: {
           userId: userId
-        }
+        },
       })
 
       await prisma.user.update({

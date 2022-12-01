@@ -10,7 +10,7 @@ import SelectMonthModalTest from "../components/SelectMonthModal";
 import Modal from "../components/Modal";
 import { BudgetMonthSelectOption } from "../server/service/budgetMonthService";
 import PageHeader from "../components/PageHeader";
-import { MonthlyBudget } from "@prisma/client";
+import { BudgetItemContainer, MonthlyBudget } from "@prisma/client";
 import EmptyBudgetMonthCard from "../components/EmptyBudgetMonth";
 
 const user = {
@@ -41,12 +41,16 @@ export default function App() {
   const [selectedMonth, setSelectedMonth] = useState<
     BudgetMonthSelectOption | undefined
   >(undefined);
-  const [budgetMonth, setBudgetMonth] = useState<MonthlyBudget | null>(null);
+  const [budgetMonth, setBudgetMonth] = useState<
+    (MonthlyBudget & { budgetGroup: BudgetItemContainer[] }) | null
+  >(null);
 
   const getMonthOptionsRes = trpc.budgetMonth.getBudgetMonthOptions.useQuery();
 
   trpc.budgetMonth.getBudgetMonth.useQuery(
-    { monthYearId: selectedMonth?.monthYear ? selectedMonth.monthYearId : "" },
+    {
+      monthYearId: selectedMonth?.monthYearId ? selectedMonth.monthYearId : "",
+    },
     {
       enabled: Boolean(selectedMonth?.monthYearId),
       onSuccess(data) {

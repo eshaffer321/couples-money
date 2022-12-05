@@ -1,11 +1,17 @@
 import { Dialog } from '@headlessui/react'
 import { PlusIcon } from '@heroicons/react/24/outline'
+import {trpc} from '../utils/trpc';
 
 interface Props {
   open: boolean,
   setOpen(value: boolean): any
 }
 export default function NewBudgetItemModal(props: Props) {
+
+ 
+  const createNewBudgetItem = () => {
+
+  }
 
   return (
     <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">

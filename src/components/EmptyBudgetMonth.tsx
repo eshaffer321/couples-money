@@ -3,7 +3,6 @@ import { MonthlyBudget } from "@prisma/client";
 import { BudgetMonthSelectOption } from "../server/service/budgetMonthService";
 import { trpc } from "../utils/trpc";
 interface Props {
-  setBudgetMonth(val: MonthlyBudget | null): void;
   selectedBudgetMonth?: BudgetMonthSelectOption;
 }
 

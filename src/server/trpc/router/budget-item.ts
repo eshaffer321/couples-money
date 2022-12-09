@@ -1,10 +1,10 @@
 import {router, protectedProcedure} from "../trpc";
-import { z } from "zod";
 import { budgetItemService } from "../../service/budgetItemService";
+import {validations} from '../../../components/NewBudgetItemModal';
 
 export const budgetItemRouter = router({
   create: protectedProcedure
-  .input(z.object({name: z.string(), budgetGroupId: z.number(), amount: z.number()}))
+  .input(validations)
   .mutation(async ({ input, ctx }) => {
     const userSession = ctx.session.user;
     // TODO: make sure user has permission to update this resource

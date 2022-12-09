@@ -7,19 +7,29 @@ interface Props {
   budgetItemContainerId: number,
   budgetItemContainerName: string
 }
+
+interface CreateBudgetItemMutationArgs {
+  name: string
+  budgetGroupId: number,
+  amount: number
+}
 export default function NewBudgetItem(props: Props) {
 
   const [isModalOpen, setModal] = useState(false);
 
-  const createNewBudgetItem = () => {
+  const mutation = trpc.budgetItem.create.useMutation({
+    onSuccess(data, variables, context) {
+      // set data
+    }
+  });
 
-
+  const createNewBudgetItem = (data: CreateBudgetItemMutationArgs) => {
+    mutation.mutate(data);
   }
-
   return (
     <>
       <Modal open={isModalOpen} setOpen={setModal}>
-          <NewBudgetItemModal open={isModalOpen} setOpen={setModal}/>
+          <NewBudgetItemModal open={isModalOpen} setOpen={setModal} createNewBudgetItem={createNewBudgetItem}/>
       </Modal>
 
       <button

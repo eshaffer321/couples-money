@@ -66,7 +66,7 @@ export default function BudgetMonthCard(props: Props) {
                 <li key={item.id} className="px-6 py-4">heyyy</li>
               ))}
             </ul>
-            <NewBudgetItem></NewBudgetItem>
+            <NewBudgetItem budgetItemContainerId={budgetItemContainer.id} budgetItemContainerName={budgetItemContainer.name}></NewBudgetItem>
           </motion.section>
         )}
       </AnimatePresence>

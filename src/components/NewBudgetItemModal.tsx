@@ -1,6 +1,5 @@
 import { Dialog } from '@headlessui/react'
 import { PlusIcon } from '@heroicons/react/24/outline'
-import { CreateBudgetItemMutationArgs } from './NewBudgetItem';
 import { z } from 'zod';
 import { trpc } from '../utils/trpc';
 import { useZodForm } from '../hooks/useZodForm';
@@ -8,12 +7,19 @@ import { useZodForm } from '../hooks/useZodForm';
 interface Props {
   open: boolean,
   setOpen(value: boolean): any,
-  createNewBudgetItem(data: CreateBudgetItemMutationArgs): any
+  budgetItemContainerId: number
 }
 
-export const validations = z.object({name: z.string(), budgetGroupId: z.number(), amount: z.number()})
+export const validations = z.object({
+  name: z.string(),
+  budgetGroupId: z.number(),
+  amount: z.number().min(0.00)
+});
 
 export default function NewBudgetItemModal(props: Props) {
+
+  const {budgetItemContainerId} = props;
+
   const utils = trpc.useContext().budgetMonth;
 
   const mutation = trpc.budgetItem.create.useMutation({
@@ -26,7 +32,8 @@ export default function NewBudgetItemModal(props: Props) {
     schema: validations,
     defaultValues: {
       name: '',
-      amount: 0.00
+      amount: 0.00,
+      budgetGroupId: budgetItemContainerId
     }
   });
 
@@ -47,8 +54,13 @@ export default function NewBudgetItemModal(props: Props) {
 
           <form
             onSubmit={methods.handleSubmit(async (values) => {
+              console.log("submit called");
+
+              console.log(values);
+
               await mutation.mutateAsync(values);
               methods.reset();
+              props.setOpen(false);
             })}
           >
             {/* Budget Item Name Input */}
@@ -89,12 +101,17 @@ export default function NewBudgetItemModal(props: Props) {
                   <span className="text-gray-500 sm:text-sm">$</span>
                 </div>
                 <input
-                  {...methods.register("amount")}
-                  type="text"
+                  {...methods.register("amount", {
+                    setValueAs(value) {
+                         console.log("value", value);
+                        return parseFloat(value);
+                    },
+                  })}
+                  type="number"
                   name="amount"
                   id="amount"
+                  step="0.01"
                   className="block w-full rounded-md border-gray-300 pl-7 pr-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                  placeholder="0.00"
                   aria-describedby="price-currency"
                 />
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
@@ -106,6 +123,11 @@ export default function NewBudgetItemModal(props: Props) {
                   </span>
                 </div>
               </div>
+              {methods.formState.errors.amount?.message && (
+                <p className="text-red-700">
+                  {methods.formState.errors.amount?.message}
+                </p>
+              )}
             </div>
 
             {/* Buttons */}
@@ -114,9 +136,8 @@ export default function NewBudgetItemModal(props: Props) {
                 type="submit"
                 disabled={mutation.isLoading}
                 className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-1 sm:text-sm"
-                onClick={() => props.setOpen(false)}
               >
-                Create
+                {mutation.isLoading ? "Loading..." : "Create"}
               </button>
               <button
                 type="button"
@@ -126,6 +147,20 @@ export default function NewBudgetItemModal(props: Props) {
               >
                 Cancel
               </button>
+            </div>
+
+            <div>
+              <input
+                {...methods.register("budgetGroupId", {
+                  setValueAs(value) {
+                      return parseInt(value);
+                  },
+                })}
+                type="number"
+                id="budgetGroupId"
+                className="invisible"
+              />
+
             </div>
           </form>
         </div>

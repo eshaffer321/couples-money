@@ -10,7 +10,7 @@ import SelectMonthModalTest from "../components/SelectMonthModal";
 import Modal from "../components/Modal";
 import { BudgetMonthSelectOption } from "../server/service/budgetMonthService";
 import PageHeader from "../components/PageHeader";
-import { BudgetItemContainer, MonthlyBudget } from "@prisma/client";
+import { BudgetItem, BudgetItemContainer, MonthlyBudget } from "@prisma/client";
 import EmptyBudgetMonthCard from "../components/EmptyBudgetMonth";
 
 const user = {
@@ -36,15 +36,23 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
+export type BudgetMonthResponse = (MonthlyBudget & {
+  budgetGroup: (BudgetItemContainer & {
+      budgetItem: BudgetItem[];
+  })[];
+}) | null
+
 export default function App() {
+  //state
   const [monthSelectModalOpen, setMonthSelectModal] = useState(false);
+  
   const [selectedMonth, setSelectedMonth] = useState<
     BudgetMonthSelectOption | undefined
   >(undefined);
-  const [budgetMonth, setBudgetMonth] = useState<
-    (MonthlyBudget & { budgetGroup: BudgetItemContainer[] }) | null
-  >(null);
 
+  const [budgetMonth, setBudgetMonth] = useState<BudgetMonthResponse>(null);
+
+  // queries
   const getMonthOptionsRes = trpc.budgetMonth.getBudgetMonthOptions.useQuery();
 
   trpc.budgetMonth.getBudgetMonth.useQuery(

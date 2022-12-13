@@ -54,10 +54,6 @@ export default function NewBudgetItemModal(props: Props) {
 
           <form
             onSubmit={methods.handleSubmit(async (values) => {
-              console.log("submit called");
-
-              console.log(values);
-
               await mutation.mutateAsync(values);
               methods.reset();
               props.setOpen(false);
@@ -73,10 +69,12 @@ export default function NewBudgetItemModal(props: Props) {
               </label>
               <div className="mt-1">
                 <input
-                  {...methods.register("name")}
+                  {...methods.register("name", {
+                    setValueAs: (value) => value.trim(),
+                  })}
                   type="text"
-                  name="budgetItemName"
-                  id="budgetItemName"
+                  name="name"
+                  id="name"
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                   placeholder="Groceries"
                 />
@@ -102,10 +100,7 @@ export default function NewBudgetItemModal(props: Props) {
                 </div>
                 <input
                   {...methods.register("amount", {
-                    setValueAs(value) {
-                         console.log("value", value);
-                        return parseFloat(value);
-                    },
+                    setValueAs: (value) => parseFloat(value),
                   })}
                   type="number"
                   name="amount"

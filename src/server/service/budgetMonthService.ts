@@ -27,7 +27,11 @@ class BudgetMonthService {
         name: monthYearId,
       },
       include: {
-        budgetGroup: true,
+        budgetGroup: {
+          include: {
+            budgetItem: true,
+          },
+        },
       },
     });
   }

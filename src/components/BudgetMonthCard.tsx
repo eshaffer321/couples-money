@@ -2,7 +2,7 @@ import {ChevronDownIcon, PencilIcon} from '@heroicons/react/20/solid'
 import NewBudgetItem from "./NewBudgetItem";
 import {AnimatePresence, motion} from "framer-motion";
 import {useState} from "react";
-import { BudgetItemContainer } from '@prisma/client';
+import { BudgetItem, BudgetItemContainer } from '@prisma/client';
 
 const items = [
   { id: 1 },
@@ -12,11 +12,19 @@ const items = [
 ]
 
 interface Props {
-  budgetItemContainer: BudgetItemContainer
+  budgetItemContainer: BudgetItemContainer & {
+      budgetItem: BudgetItem[];
+  } 
 }
+
 export default function BudgetMonthCard(props: Props) {
   const {budgetItemContainer} = props;
   const [expanded, setExpanded] = useState(true);
+
+  // calculate the budgeted amount from all budget items
+  const budgetedAmount = budgetItemContainer.budgetItem.reduce((acc, item) => {
+    return acc + item.amount;
+  }, 0);
 
   return (
     <div className="border-b rounded-md border-gray-200 bg-white py-1 sm:px-1">
@@ -41,7 +49,7 @@ export default function BudgetMonthCard(props: Props) {
         <div className="ml-4 mt-4 flex flex-shrink-0">
           <PencilIcon className="-ml-1 mr-2 h-5 w-5 text-gray-400" aria-hidden="true" />
           <div className="items-center inline-flex">
-            600.00/800.00
+            600.00/{budgetedAmount}
           </div>
         </div>
 
@@ -62,8 +70,13 @@ export default function BudgetMonthCard(props: Props) {
             transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
           >
             <ul role="list" className="divide-y divide-gray-300">
-              {items.map((item) => (
-                <li key={item.id} className="px-6 py-4">heyyy</li>
+              {budgetItemContainer.budgetItem.map((item) => (
+                <li key={item.id} className="px-6 py-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-900">{item.name}</span>
+                    <span className="text-sm text-gray-500">{item.amount}</span>
+                  </div>
+                </li>
               ))}
             </ul>
             <NewBudgetItem budgetItemContainerId={budgetItemContainer.id} budgetItemContainerName={budgetItemContainer.name}></NewBudgetItem>

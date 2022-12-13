@@ -9,7 +9,6 @@ interface Props {
 
 export default function SeparateCards(props: Props) {
     const {budget} = props;
-    console.log(budget);
     return (
         <ul role="list" className="space-y-4">
             {budget.budgetGroup.map((item) => (

@@ -3,11 +3,10 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["interactiveTransactions"]
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
   // Further reading:
   // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
@@ -28,12 +27,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? // @db.Text
-  access_token      String? // @db.Text
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? // @db.Text
+  id_token          String? @db.Text
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -111,7 +110,7 @@ model BudgetItemContainer {
 model BudgetItem {
   id            Int                 @id @default(autoincrement())
   name          String
-  amount        Int                 @default(0)
+  amount        Float @db.DoublePrecision
   budgetGroup   BudgetItemContainer @relation(fields: [budgetGroupId], references: [id])
   transaction   Transaction[]
   budgetGroupId Int

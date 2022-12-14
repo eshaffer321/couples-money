@@ -1,7 +1,7 @@
 import { DocumentPlusIcon } from "@heroicons/react/20/solid";
 import { MonthlyBudget } from "@prisma/client";
-import { BudgetMonthSelectOption } from "../server/service/budgetMonthService";
-import { trpc } from "../utils/trpc";
+import { BudgetMonthSelectOption } from "../../server/service/budgetMonthService";
+import { trpc } from "../../utils/trpc";
 interface Props {
   selectedBudgetMonth?: BudgetMonthSelectOption;
 }

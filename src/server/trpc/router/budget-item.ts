@@ -1,6 +1,6 @@
 import {router, protectedProcedure} from "../trpc";
 import { budgetItemService } from "../../service/budgetItemService";
-import {validations} from '../../../components/NewBudgetItemModal';
+import {validations} from '../../../components/BudgetItem/NewBudgetItemModal';
 
 export const budgetItemRouter = router({
   create: protectedProcedure
@@ -8,7 +8,6 @@ export const budgetItemRouter = router({
   .mutation(async ({ input, ctx }) => {
     const userSession = ctx.session.user;
     // TODO: make sure user has permission to update this resource
-    console.log(input.amount);
     return await budgetItemService.create(input.budgetGroupId, input.name, input.amount);
   }),
 });

@@ -3,7 +3,7 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { PlusIcon as PlusIconMini } from "@heroicons/react/20/solid";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import SimpleSelectMenu from "../components/SimpleSelectMenu";
-import SeparateCards from "../components/SeparateCards";
+import SeparateCards from "../components/BudgetGroup/BudgetGroupCards";
 
 import { trpc } from "../utils/trpc";
 import SelectMonthModalTest from "../components/SelectMonthModal";
@@ -11,7 +11,7 @@ import Modal from "../components/Modal";
 import { BudgetMonthSelectOption } from "../server/service/budgetMonthService";
 import PageHeader from "../components/PageHeader";
 import { BudgetItem, BudgetItemContainer, MonthlyBudget } from "@prisma/client";
-import EmptyBudgetMonthCard from "../components/EmptyBudgetMonth";
+import EmptyBudgetMonthCard from "../components/BudgetMonth/EmptyBudgetMonth";
 
 const user = {
   name: "Tom Cook",

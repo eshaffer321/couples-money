@@ -1,28 +1,30 @@
 import { Dialog } from '@headlessui/react'
 import { PlusIcon } from '@heroicons/react/24/outline'
 import { z } from 'zod';
-import { trpc } from '../utils/trpc';
-import { useZodForm } from '../hooks/useZodForm';
+import { trpc } from '../../utils/trpc';
+import { useZodForm } from '../../hooks/useZodForm';
 
 interface Props {
-  open: boolean,
-  setOpen(value: boolean): any,
-  budgetItemContainerId: number
+  open: boolean;
+  setOpen(value: boolean): any;
+  budgetMonthID: number;
+  relativeOrder: number;
 }
 
 export const validations = z.object({
   name: z.string(),
-  budgetGroupId: z.number(),
-  amount: z.number().min(0.00)
+  budgetMonthID: z.number(),
+  isOpen: z.boolean(),
+  relativeOrder: z.number()
 });
 
-export default function NewBudgetItemModal(props: Props) {
+export default function NewBudgetGroupModal(props: Props) {
 
-  const {budgetItemContainerId} = props;
+  const {budgetMonthID, relativeOrder} = props;
 
   const utils = trpc.useContext().budgetMonth;
 
-  const mutation = trpc.budgetItem.create.useMutation({
+  const mutation = trpc.budgetGroup.create.useMutation({
     onSuccess: async() => {
       await utils.getBudgetMonth.invalidate();
     }
@@ -32,8 +34,9 @@ export default function NewBudgetItemModal(props: Props) {
     schema: validations,
     defaultValues: {
       name: '',
-      amount: 0.00,
-      budgetGroupId: budgetItemContainerId
+      isOpen: true,
+      budgetMonthID: budgetMonthID,
+      relativeOrder: relativeOrder 
     }
   });
 
@@ -49,7 +52,7 @@ export default function NewBudgetItemModal(props: Props) {
             as="h3"
             className="text-lg font-medium leading-6 text-gray-900"
           >
-            Create new Budget Item
+            Create new Budget Group
           </Dialog.Title>
 
           <form
@@ -59,7 +62,7 @@ export default function NewBudgetItemModal(props: Props) {
               props.setOpen(false);
             })}
           >
-            {/* Budget Item Name Input */}
+            {/* Budget Group Name Input */}
             <div>
               <label
                 htmlFor="email"
@@ -76,7 +79,7 @@ export default function NewBudgetItemModal(props: Props) {
                   name="name"
                   id="name"
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                  placeholder="Groceries"
+                  placeholder="Food, Transportation, etc."
                 />
               </div>
               {methods.formState.errors.name?.message && (
@@ -86,43 +89,43 @@ export default function NewBudgetItemModal(props: Props) {
               )}
             </div>
 
-            {/* Budget Item amount Input */}
-            <div className="mt-2">
-              <label
-                htmlFor="price"
-                className="block text-left text-sm font-medium text-gray-700"
-              >
-                Amount
-              </label>
-              <div className="relative mt-1 rounded-md shadow-sm">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <span className="text-gray-500 sm:text-sm">$</span>
-                </div>
+            {/* Budget Month Invisible Input */}
+            <div className="max-h-0">
+              <div>
                 <input
-                  {...methods.register("amount", {
+                  {...methods.register("budgetMonthID", {
                     setValueAs: (value) => parseFloat(value),
                   })}
                   type="number"
-                  name="amount"
-                  id="amount"
-                  step="0.01"
-                  className="block w-full rounded-md border-gray-300 pl-7 pr-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                  aria-describedby="price-currency"
+                  name="budgetMonthId"
+                  id="budgetMonthId"
+                  className="invisible"
                 />
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                  <span
-                    className="text-gray-500 sm:text-sm"
-                    id="price-currency"
-                  >
-                    USD
-                  </span>
-                </div>
               </div>
-              {methods.formState.errors.amount?.message && (
-                <p className="text-red-700">
-                  {methods.formState.errors.amount?.message}
-                </p>
-              )}
+            </div>
+
+            {/* Invisible isOpen input */}
+            <div className="max-h-0">
+              <input
+                {...methods.register("isOpen", {
+                  setValueAs: (value) => (value == "true" ? true : false),
+                })}
+                type="text"
+                id="isOpen"
+                className="invisible"
+              />
+            </div>
+
+            {/* Invisible isOpen input */}
+            <div className="max-h-0">
+              <input
+                {...methods.register("relativeOrder", {
+                  setValueAs: (value) => parseInt(value),
+                })}
+                type="number"
+                id="relativeOrder"
+                className="invisible"
+              />
             </div>
 
             {/* Buttons */}
@@ -138,24 +141,9 @@ export default function NewBudgetItemModal(props: Props) {
                 type="button"
                 className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-2 sm:mt-0 sm:text-sm"
                 onClick={() => props.setOpen(false)}
-                // innerref={cancelButtonRef}
               >
                 Cancel
               </button>
-            </div>
-
-            <div>
-              <input
-                {...methods.register("budgetGroupId", {
-                  setValueAs(value) {
-                      return parseInt(value);
-                  },
-                })}
-                type="number"
-                id="budgetGroupId"
-                className="invisible"
-              />
-
             </div>
           </form>
         </div>

@@ -1,8 +1,9 @@
 import {ChevronDownIcon, PencilIcon} from '@heroicons/react/20/solid'
 import NewBudgetItem from "../BudgetItem/NewBudgetItem";
 import {AnimatePresence, motion} from "framer-motion";
-import {useState} from "react";
+import React, {useState} from "react";
 import { BudgetItem, BudgetItemContainer } from '@prisma/client';
+import {ControlledInput} from "../ControlledInput";
 
 interface Props {
   budgetItemContainer: BudgetItemContainer & {
@@ -12,6 +13,7 @@ interface Props {
 
 export default function BudgetMonthCard(props: Props) {
   const {budgetItemContainer} = props;
+  const [budgetGroupName, setBudgetGroupName] = useState(budgetItemContainer.name);
   const [expanded, setExpanded] = useState(true);
 
   // calculate the budgeted amount from all budget items
@@ -19,15 +21,18 @@ export default function BudgetMonthCard(props: Props) {
     return acc + item.amount;
   }, 0);
 
+  const updateBudgetGroupName = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(event.target.value);
+  }
+
   return (
     <div className="rounded-md border-b border-gray-200 bg-white py-1 sm:px-1">
       <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
         {/*Budget Title and chevron*/}
         <div className="ml-4 mt-4">
           <div className="flex items-center">
-            <div className="flex-shrink-0">{budgetItemContainer.name}</div>
             <motion.div
-              className="pt-2"
+              className="ml-2 pt-2"
               initial={true}
               onClick={() => {
                 setExpanded(!expanded);
@@ -37,6 +42,12 @@ export default function BudgetMonthCard(props: Props) {
                 <ChevronDownIcon className="-ml-0 mr-2 h-5 w-5 text-gray-400"></ChevronDownIcon>
               </button>
             </motion.div>
+            <div className="flex-shrink-0">
+              <ControlledInput
+                value={budgetGroupName}
+                onChange={updateBudgetGroupName}
+              ></ControlledInput>
+            </div>
           </div>
         </div>
 

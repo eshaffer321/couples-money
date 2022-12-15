@@ -155,7 +155,6 @@ export default function NewBudgetItemModal(props: Props) {
                 id="budgetGroupId"
                 className="invisible"
               />
-
             </div>
           </form>
         </div>

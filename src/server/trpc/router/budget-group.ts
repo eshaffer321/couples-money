@@ -7,7 +7,9 @@ export const budgetGroupRouter = router({
   .input(validations)
   .mutation(async ({ input, ctx }) => {
     const userSession = ctx.session.user;
+    const {budgetMonthID, name, relativeOrder, isOpen} = input;
     // TODO: make sure user has permission to update this resource
-    return await budgetGroupService.create();
+    return await budgetGroupService.create(budgetMonthID, name, relativeOrder, isOpen);
+
   }),
 });

@@ -19,6 +19,18 @@ class  BudgetGroupService{
       },
     });
   }
+  public async update(budgetGroupID: number, name?: string, relativeOrder?: number, isOpen?: boolean) {
+    return await prisma.budgetItemContainer.update({
+      where: {
+        id: budgetGroupID,
+      },
+      data: {
+        name: name ? { set: name } : undefined,
+        relativeOrder: relativeOrder ? { set: relativeOrder } : undefined,
+        isOpen: isOpen ? { set: isOpen } : undefined,
+      },
+    });
+  }
 }
 
 export const budgetGroupService = new BudgetGroupService();

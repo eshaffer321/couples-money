@@ -31,7 +31,9 @@ export default function SeparateCards(props: Props) {
       </Modal>
 
       <ul role="list" className="space-y-4">
-        {budget.budgetGroup.map((item) => (
+        {budget.budgetGroup
+        .sort((a, b) => a.relativeOrder - b.relativeOrder)
+        .map((item) => (
           <li
             key={item.id}
             className="overflow-hidden rounded-md bg-white py-5 px-4 shadow"

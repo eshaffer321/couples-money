@@ -1,9 +1,10 @@
-import {ChevronDownIcon, PencilIcon} from '@heroicons/react/20/solid'
+import {ChevronDownIcon} from '@heroicons/react/20/solid'
 import NewBudgetItem from "../BudgetItem/NewBudgetItem";
 import {AnimatePresence, motion} from "framer-motion";
 import React, {useState} from "react";
 import { BudgetItem, BudgetItemContainer } from '@prisma/client';
 import {ControlledInput} from "../ControlledInput";
+import { trpc } from '../../utils/trpc';
 
 interface Props {
   budgetItemContainer: BudgetItemContainer & {
@@ -11,10 +12,22 @@ interface Props {
   } 
 }
 
+const chevronVariants = {
+  expanded: { rotate: -90 },
+  collapsed: { rotate: 0 },
+};
+
 export default function BudgetMonthCard(props: Props) {
   const {budgetItemContainer} = props;
   const [budgetGroupName, setBudgetGroupName] = useState(budgetItemContainer.name);
   const [expanded, setExpanded] = useState(true);
+
+  const utils = trpc.useContext().budgetMonth;
+  const mutation = trpc.budgetGroup.update.useMutation({
+    onSuccess: async() => {
+      await utils.getBudgetMonth.invalidate();
+    }
+  });
 
   // calculate the budgeted amount from all budget items
   const budgetedAmount = budgetItemContainer.budgetItem.reduce((acc, item) => {
@@ -22,24 +35,33 @@ export default function BudgetMonthCard(props: Props) {
   }, 0);
 
   const updateBudgetGroupName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event.target.value);
+    setBudgetGroupName(event.target.value);
+    mutation.mutate({
+      budgetGroupID: budgetItemContainer.id,
+      name: event.target.value,
+      isOpen: budgetItemContainer.isOpen,
+      relativeOrder: budgetItemContainer.relativeOrder
+    });
   }
 
+
   return (
-    <div className="rounded-md border-b border-gray-200 bg-white py-1 sm:px-1">
+    <div className="rounded-md border-gray-200 bg-white py-1 sm:px-1">
       <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
         {/*Budget Title and chevron*/}
         <div className="ml-4 mt-4">
           <div className="flex items-center">
             <motion.div
               className="ml-2 pt-2"
-              initial={true}
+              initial={expanded ? "expanded" : "collapsed"}
+              animate={expanded ? "collapsed" : "expanded"}
+              variants={chevronVariants}
               onClick={() => {
                 setExpanded(!expanded);
               }}
             >
               <button>
-                <ChevronDownIcon className="-ml-0 mr-2 h-5 w-5 text-gray-400"></ChevronDownIcon>
+                <ChevronDownIcon className="-ml-0 h-5 w-5 text-gray-400"></ChevronDownIcon>
               </button>
             </motion.div>
             <div className="flex-shrink-0">
@@ -54,10 +76,10 @@ export default function BudgetMonthCard(props: Props) {
         {/*Budgeted Amount*/}
         {/* TODO:// Calculate the amounts from transactions items */}
         <div className="ml-4 mt-4 flex flex-shrink-0">
-          <PencilIcon
+          {/* <PencilIcon
             className="-ml-1 mr-2 h-5 w-5 text-gray-400"
             aria-hidden="true"
-          />
+          /> */}
           <div className="inline-flex items-center">
             600.00/{budgetedAmount}
           </div>

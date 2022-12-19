@@ -114,6 +114,7 @@ model BudgetItem {
   budgetGroup   BudgetItemContainer @relation(fields: [budgetGroupId], references: [id])
   transaction   Transaction[]
   budgetGroupId Int
+  relativeOrder Int
 }
 
 model Transaction {

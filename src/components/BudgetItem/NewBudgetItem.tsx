@@ -1,16 +1,15 @@
-import {useState} from "react";
-import NewBudgetItemModal from "./NewBudgetItemModal"
+import { useState } from "react";
+import NewBudgetItemModal from "./NewBudgetItemModal";
 import Modal from "../Modal";
-import {trpc} from "../../utils/trpc";
 
 interface Props {
-  budgetItemContainerId: number,
-  budgetItemContainerName: string | null
+  budgetItemContainerId: number;
+  budgetItemContainerName: string | null;
+  newBudgetItemRelativeOrder: number;
 }
 
 export default function NewBudgetItem(props: Props) {
-
-  const {budgetItemContainerId} = props;
+  const { budgetItemContainerId } = props;
 
   const [isModalOpen, setModal] = useState(false);
 
@@ -21,6 +20,7 @@ export default function NewBudgetItem(props: Props) {
           open={isModalOpen}
           setOpen={setModal}
           budgetItemContainerId={budgetItemContainerId}
+          newBudgetItemRelativeOrder={props.newBudgetItemRelativeOrder}
         />
       </Modal>
 

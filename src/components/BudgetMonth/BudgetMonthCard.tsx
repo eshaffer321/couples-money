@@ -1,15 +1,14 @@
-import {ChevronDownIcon} from '@heroicons/react/20/solid'
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import NewBudgetItem from "../BudgetItem/NewBudgetItem";
-import {AnimatePresence, motion} from "framer-motion";
-import React, {useState} from "react";
-import { BudgetItem, BudgetItemContainer } from '@prisma/client';
-import {ControlledInput} from "../ControlledInput";
-import { trpc } from '../../utils/trpc';
+import { AnimatePresence, motion } from "framer-motion";
+import React, { useState } from "react";
+import { BudgetItem, BudgetItemContainer } from "@prisma/client";
+import { ControlledInput } from "../ControlledInput";
+import { trpc } from "../../utils/trpc";
+import BudgetListItem from "../BudgetItem/BudgetListItem";
 
 interface Props {
-  budgetItemContainer: BudgetItemContainer & {
-      budgetItem: BudgetItem[];
-  } 
+  budgetItemContainer: BudgetItemContainer & { budgetItem: BudgetItem[]; };
 }
 
 const chevronVariants = {
@@ -18,32 +17,42 @@ const chevronVariants = {
 };
 
 export default function BudgetMonthCard(props: Props) {
-  const {budgetItemContainer} = props;
-  const [budgetGroupName, setBudgetGroupName] = useState(budgetItemContainer.name);
+  const { budgetItemContainer } = props;
+  const [budgetGroupName, setBudgetGroupName] = useState(
+    budgetItemContainer.name
+  );
   const [expanded, setExpanded] = useState(true);
 
   const utils = trpc.useContext().budgetMonth;
   const mutation = trpc.budgetGroup.update.useMutation({
-    onSuccess: async() => {
+    onSuccess: async () => {
       await utils.getBudgetMonth.invalidate();
-    }
+    },
   });
 
   // calculate the budgeted amount from all budget items
-  const budgetedAmount = budgetItemContainer.budgetItem.reduce((acc, item) => {
+  const budgetedAmount = budgetItemContainer.budgetItem?.reduce((acc, item) => {
     return acc + item.amount;
   }, 0);
 
-  const updateBudgetGroupName = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const updateBudgetGroupName = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setBudgetGroupName(event.target.value);
     mutation.mutate({
       budgetGroupID: budgetItemContainer.id,
       name: event.target.value,
       isOpen: budgetItemContainer.isOpen,
-      relativeOrder: budgetItemContainer.relativeOrder
+      relativeOrder: budgetItemContainer.relativeOrder,
     });
-  }
+  };
 
+  // get one higher than the highest relative order or 0 if there are no budget items
+  const newBudgetItemRelativeOrder =
+    budgetItemContainer.budgetItem.reduce(
+      (acc, curr) => (curr.relativeOrder > acc ? curr.relativeOrder : acc),
+      0
+    ) + 1;
 
   return (
     <div className="rounded-md border-gray-200 bg-white py-1 sm:px-1">
@@ -101,20 +110,16 @@ export default function BudgetMonthCard(props: Props) {
             transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
           >
             <ul role="list" className="divide-y divide-gray-300">
-              {budgetItemContainer.budgetItem.map((item) => (
-                <li key={item.id} className="px-6 py-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-900">
-                      {item.name}
-                    </span>
-                    <span className="text-sm text-gray-500">{item.amount}</span>
-                  </div>
-                </li>
-              ))}
+              {budgetItemContainer.budgetItem
+                .sort((a, b) => a.relativeOrder - b.relativeOrder)
+                .map((item) => (
+                  <BudgetListItem key={item.id} item={item}></BudgetListItem>
+                ))}
             </ul>
             <NewBudgetItem
               budgetItemContainerId={budgetItemContainer.id}
               budgetItemContainerName={budgetItemContainer.name}
+              newBudgetItemRelativeOrder={newBudgetItemRelativeOrder}
             ></NewBudgetItem>
           </motion.section>
         )}

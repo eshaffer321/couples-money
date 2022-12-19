@@ -1,40 +1,42 @@
-import { Dialog } from '@headlessui/react'
-import { PlusIcon } from '@heroicons/react/24/outline'
-import { z } from 'zod';
-import { trpc } from '../../utils/trpc';
-import { useZodForm } from '../../hooks/useZodForm';
+import { Dialog } from "@headlessui/react";
+import { PlusIcon } from "@heroicons/react/24/outline";
+import { z } from "zod";
+import { trpc } from "../../utils/trpc";
+import { useZodForm } from "../../hooks/useZodForm";
 
 interface Props {
-  open: boolean,
-  setOpen(value: boolean): any,
-  monthlyBudgetId: number
+  open: boolean;
+  setOpen(value: boolean): any;
+  budgetItemContainerId: number;
+  newBudgetItemRelativeOrder: number;
 }
 
 export const validations = z.object({
   name: z.string(),
   budgetGroupId: z.number(),
-  amount: z.number().min(0.00)
+  amount: z.number().min(0.0),
+  relativeOrder: z.number().min(0),
 });
 
 export default function NewBudgetItemModal(props: Props) {
-
-  const {budgetItemContainerId} = props;
+  const { budgetItemContainerId, newBudgetItemRelativeOrder } = props;
 
   const utils = trpc.useContext().budgetMonth;
 
   const mutation = trpc.budgetItem.create.useMutation({
-    onSuccess: async() => {
+    onSuccess: async () => {
       await utils.getBudgetMonth.invalidate();
-    }
-  })
+    },
+  });
 
   const methods = useZodForm({
     schema: validations,
     defaultValues: {
-      name: '',
-      amount: 0.00,
-      budgetGroupId: budgetItemContainerId
-    }
+      name: "",
+      amount: 0.0,
+      budgetGroupId: budgetItemContainerId,
+      relativeOrder: newBudgetItemRelativeOrder,
+    },
   });
 
   return (
@@ -148,7 +150,7 @@ export default function NewBudgetItemModal(props: Props) {
               <input
                 {...methods.register("budgetGroupId", {
                   setValueAs(value) {
-                      return parseInt(value);
+                    return parseInt(value);
                   },
                 })}
                 type="number"
@@ -161,5 +163,4 @@ export default function NewBudgetItemModal(props: Props) {
       </div>
     </Dialog.Panel>
   );
-
 }

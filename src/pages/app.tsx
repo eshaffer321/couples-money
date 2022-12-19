@@ -36,6 +36,9 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
+type BudgetItemContainerWithBudgetItem = BudgetItemContainer & { budgetItem: BudgetItem[]; }
+type MonthlyBudgetWithBudgetGroup = MonthlyBudget & { budgetGroup: BudgetItemContainerWithBudgetItem[]; }
+
 export type BudgetMonthResponse = (MonthlyBudget & {
   budgetGroup: (BudgetItemContainer & {
       budgetItem: BudgetItem[];

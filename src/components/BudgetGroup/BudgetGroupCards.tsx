@@ -1,4 +1,4 @@
-import { BudgetItemContainer, MonthlyBudget } from "@prisma/client";
+import { BudgetItem, BudgetItemContainer, MonthlyBudget } from "@prisma/client";
 import { useState } from "react";
 import BudgetMonthCard from "../BudgetMonth/BudgetMonthCard";
 import Modal from "../Modal";
@@ -6,7 +6,7 @@ import NewBudgetGroupModal from "./NewBudgetGroupModal";
 
 interface Props {
   budget: MonthlyBudget & {
-    budgetGroup: BudgetItemContainer[];
+    budgetGroup: (BudgetItemContainer & { budgetItem: BudgetItem[]; })[];
   };
 }
 
@@ -14,10 +14,11 @@ export default function SeparateCards(props: Props) {
   const { budget } = props;
   const [isModalOpen, setModal] = useState(false);
 
-  const newBudgetMonthrelativeOrder = budget.budgetGroup.reduce(
-    (acc, curr) => (curr.relativeOrder > acc ? curr.relativeOrder : acc),
-    0
-  ) + 1;
+  const newBudgetMonthrelativeOrder =
+    budget.budgetGroup.reduce(
+      (acc, curr) => (curr.relativeOrder > acc ? curr.relativeOrder : acc),
+      0
+    ) + 1;
 
   return (
     <>
@@ -32,15 +33,15 @@ export default function SeparateCards(props: Props) {
 
       <ul role="list" className="space-y-4">
         {budget.budgetGroup
-        .sort((a, b) => a.relativeOrder - b.relativeOrder)
-        .map((item) => (
-          <li
-            key={item.id}
-            className="overflow-hidden rounded-md bg-white py-5 px-4 shadow"
-          >
-            <BudgetMonthCard budgetItemContainer={item}></BudgetMonthCard>
-          </li>
-        ))}
+          .sort((a, b) => a.relativeOrder - b.relativeOrder)
+          .map((item) => (
+            <li
+              key={item.id}
+              className="overflow-hidden rounded-md bg-white py-5 px-4 shadow"
+            >
+              <BudgetMonthCard budgetItemContainer={item}></BudgetMonthCard>
+            </li>
+          ))}
 
         {/* dashed outline add new budget group */}
         <li className="overflow-hidden rounded-md bg-white py-5 px-4 shadow">

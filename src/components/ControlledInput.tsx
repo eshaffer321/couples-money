@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 
 interface Props {
-  value: string | null;
+  value: string | number | null;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  rightAligned?: boolean;
 }
 
-export const ControlledInput = ({ value, onChange }: Props) => {
+export const ControlledInput = ({ value, onChange, rightAligned = false }: Props) => {
   const [inputValue, setInputValue] = useState(value);
   const [isFocused, setIsFocused] = useState(false);
 
@@ -27,7 +28,9 @@ export const ControlledInput = ({ value, onChange }: Props) => {
 
   return (
     <input
-      value={inputValue? inputValue : ''}
+      className={rightAligned ? "text-right" : ""}
+      size={inputValue ? inputValue.toString().length : 1}
+      value={inputValue ? inputValue : ""}
       onChange={handleChange}
       onFocus={handleFocus}
       onBlur={handleBlur}

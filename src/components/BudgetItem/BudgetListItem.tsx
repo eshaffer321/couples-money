@@ -40,7 +40,6 @@ function ListItem(props: Props) {
       amount: parseInt(event.target.value),
     });
   };
-  console.log(budgetItem);
   return (
     <li key={budgetItem.id} className="px-6 py-4">
       <div className="flex items-center justify-between">
@@ -50,7 +49,13 @@ function ListItem(props: Props) {
             onChange={onBudgetItemNameChange}
           />
         </span>
-        <span className="text-sm text-gray-500">{budgetItem.amount}</span>
+        <span className="text-sm text-gray-500">
+          <ControlledInput
+            rightAligned={true}
+            value={budgetItem.amount}
+            onChange={onBudgetItemAmountChange}
+          />
+        </span>
       </div>
     </li>
   );

@@ -11,16 +11,18 @@ export interface BudgetMonthSelectOption {
 }
 
 class BudgetMonthService {
+
+  /**
+   * Retrieves a specific monthly budget by budget account ID and month/year identifier.
+   *
+   * @param {number} currentBudgetAccountId - The ID of the budget account that the monthly budget belongs to.
+   * @param {string} monthYearId - The month and year identifier for the monthly budget.
+   * @returns {Promise<MonthlyBudget>} A promise that resolves to the requested monthly budget.
+   */
   public async getBudgetMonth(
     currentBudgetAccountId: number,
     monthYearId: string
   ) {
-    console.log(
-      "Getting budget month by currentBudgetAccountId: " +
-        currentBudgetAccountId +
-        " month year id: " +
-        monthYearId
-    );
     return await prisma.monthlyBudget.findFirst({
       where: {
         budgetAccountId: currentBudgetAccountId,
@@ -40,7 +42,14 @@ class BudgetMonthService {
     return getListOfBudgetMonths(6);
   }
 
-  public async create(currentBudgetAccountId:number ,monthYearId: string){
+  /**
+   * Creates a new monthly budget with a default budget group.
+   *
+   * @param {number} currentBudgetAccountId - The ID of the budget account that the new monthly budget belongs to.
+   * @param {string} monthYearId - The month and year identifier for the new monthly budget.
+   * @returns {Promise<MonthlyBudget>} A promise that resolves to the newly created monthly budget.
+   */
+  public async create(currentBudgetAccountId: number, monthYearId: string) {
     return await prisma.monthlyBudget.create({
       data: {
         name: monthYearId,
@@ -54,22 +63,99 @@ class BudgetMonthService {
             name: "Income",
             relativeOrder: 0,
             isOpen: true,
-          }
-        }
+          },
+        },
       },
       include: {
-        budgetGroup: true
-      }
+        budgetGroup: true,
+      },
     });
   }
 
-  public async copy() {}
+  /**
+   * Copies budget groups and budget items from a previous month to a new month.
+   *
+   * @param {number} currentBudgetAccountId - The ID of the budget account that the new monthly budget belongs to.
+   * @param {string} monthYearId - The month and year identifier for the new monthly budget.
+   * @returns {Promise<MonthlyBudget>} A promise that resolves to the newly created monthly budget.
+   */
+  public async copy(currentBudgetAccountId: number, monthYearId: string) {
+    const mostRecentMonthlyBudget = await prisma.monthlyBudget.findFirst({
+      where: {
+        budgetAccount: {
+          id: currentBudgetAccountId,
+        },
+        name: {
+          not: null,
+        },
+      },
+      orderBy: {
+        name: "desc",
+      },
+      include: {
+        budgetGroup: {
+          include: {
+            budgetItem: true,
+          },
+        },
+      },
+    });
+
+    if (!mostRecentMonthlyBudget) {
+      const newMonthlyBudget = await prisma.monthlyBudget.create({
+        data: {
+          budgetAccount: {
+            connect: {
+              id: currentBudgetAccountId,
+            },
+          },
+          name: monthYearId,
+        },
+      });
+      return newMonthlyBudget;
+    }
+
+    const newMonthlyBudget = await prisma.monthlyBudget.create({
+      data: {
+        budgetAccount: {
+          connect: {
+            id: currentBudgetAccountId,
+          },
+        },
+        name: monthYearId,
+        budgetGroup: {
+          create: mostRecentMonthlyBudget.budgetGroup.map((budgetGroup) => {
+            return {
+              name: budgetGroup.name,
+              relativeOrder: budgetGroup.relativeOrder,
+              isOpen: budgetGroup.isOpen,
+              budgetItem: {
+                create: budgetGroup.budgetItem.map((budgetItem) => {
+                  return {
+                    relativeOrder: budgetItem.relativeOrder,
+                    name: budgetItem.name,
+                    amount: budgetItem.amount,
+                  };
+                }),
+              },
+            };
+          }),
+        },
+      },
+    });
+  }
 }
 
 const isValidMonthYearId = (monthYear: string) => {
   return dayjs(monthYear, ["M-YYYY", "MM-YYYY"], true).isValid();
 }
 
+/**
+ * Generates a list of budget month select options.
+ *
+ * @param {number} amountOfMonths - The number of months to include in the list. The list will include half of the months before the current month, and half of the months after the current month.
+ * @returns {BudgetMonthSelectOption[]} An array of budget month select options.
+ */
 const getListOfBudgetMonths = (amountOfMonths: number) => {
   let months: number = ~~(amountOfMonths / 2);
   const monthList: BudgetMonthSelectOption[] = [];

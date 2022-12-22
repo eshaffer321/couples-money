@@ -1,8 +1,10 @@
 import { BudgetItem } from "@prisma/client";
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { trpc } from "../../utils/trpc";
 import { ControlledInput } from "../ControlledInput";
 import { motion } from "framer-motion";
+import Modal from "../Modal";
+import TransactionModal from "../Transaction/TransactionModal";
 
 interface Props {
   item: BudgetItem;
@@ -10,13 +12,12 @@ interface Props {
 
 function ListItem(props: Props) {
   const budgetItem = props.item;
-  const [budgeItemName, setBudgetItemName] = useState(budgetItem.name);
-  const [budgeItemAmount, setBudgetItemAmount] = useState(budgetItem.amount);
-  const [isRippleVisible, setIsRippleVisible] = useState(false);
-  const [clickPosition, setClickPosition] = useState<{ x: number; y: number } | null>(null);
-  const [listItem, setListItem] = useState<HTMLLIElement | null>(null);
+  const [budgetItemName, setBudgetItemName] = useState(budgetItem.name);
+  const [budgetItemAmount, setBudgetItemAmount] = useState(budgetItem.amount);
+  const [transactionModalOpen, setTransactionModalOpen] = useState(false);
 
   const utils = trpc.useContext().budgetMonth;
+
   const mutation = trpc.budgetItem.update.useMutation({
     onSuccess: async () => {
       await utils.getBudgetMonth.invalidate();
@@ -30,7 +31,7 @@ function ListItem(props: Props) {
     mutation.mutate({
       budgetItemId: budgetItem.id,
       name: event.target.value,
-      amount: budgetItem.amount,
+      amount: budgetItemAmount,
     });
   };
 
@@ -40,62 +41,46 @@ function ListItem(props: Props) {
     setBudgetItemAmount(parseFloat(event.target.value));
     mutation.mutate({
       budgetItemId: budgetItem.id,
-      name: budgetItem.name,
+      name: budgetItemName,
       amount: parseInt(event.target.value),
     });
   };
 
-  const openTransactionModal = (event: React.MouseEvent<HTMLLIElement>) => {
-    setClickPosition({ x: event.clientX, y: event.clientY });
-    setListItem(event.currentTarget);
-
-    console.log("open transaction modal");
-  };
-
-  useEffect(() => {
-    if (clickPosition && listItem) {
-      console.log("click position", clickPosition)
-      const ripple = document.createElement("div");
-      ripple.className = "ripple show";
-      ripple.style.top = `${clickPosition.y - listItem.offsetTop - listItem.offsetTop}px`;
-    ripple.style.left = `${
-      clickPosition.x - listItem.offsetLeft - listItem.offsetLeft
-    }px`;
-      ripple.style.width = "100%";
-      ripple.style.height = "100%";
-      listItem.appendChild(ripple);
-
-      setTimeout(() => {
-        ripple.classList.remove("show");
-        ripple.remove();
-      }, 250);
-    }
-  }, [clickPosition]);
-
   return (
-    <motion.li
-      whileHover={{ scale: 1.01 }}
-      whileTap={{ scale: 0.99 }}
-      onClick={openTransactionModal}
-      key={budgetItem.id}
-      className="px-6 py-4 overflow-hidden"
-    >
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-gray-900">
-          <ControlledInput
-            value={budgetItem.name}
-            onChange={onBudgetItemNameChange}
-          />
-        </span>
-        <span className="text-sm text-gray-500">
-          <ControlledInput
-            rightAligned={true}
-            value={budgetItem.amount}
-            onChange={onBudgetItemAmountChange}
-          />
-        </span>
-      </div>
-    </motion.li>
+    <>
+      <Modal open={transactionModalOpen} setOpen={setTransactionModalOpen}>
+        <TransactionModal
+          budgetItemId={budgetItem.id}
+          budgetItemName={budgetItemName}
+
+        ></TransactionModal>
+      </Modal>
+      <motion.li
+        whileHover={{
+          scale: 1.01,
+          transition: { duration: 0.2, ease: "easeInOut" },
+        }}
+        onClick={() => setTransactionModalOpen(true)}
+        key={budgetItem.id}
+        className="overflow-hidden px-6 py-4"
+      >
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium text-gray-900">
+            <ControlledInput
+              value={budgetItemName}
+              onChange={onBudgetItemNameChange}
+            />
+          </span>
+          <span className="text-sm text-gray-500">
+            <ControlledInput
+              rightAligned={true}
+              value={budgetItemAmount}
+              onChange={onBudgetItemAmountChange}
+            />
+          </span>
+        </div>
+      </motion.li>
+    </>
   );
 }
 

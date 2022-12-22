@@ -16,7 +16,7 @@ const chevronVariants = {
   collapsed: { rotate: 0 },
 };
 
-export default function BudgetMonthCard(props: Props) {
+export default function BudgetGroupRenderer(props: Props) {
   const { budgetItemContainer } = props;
   const [budgetGroupName, setBudgetGroupName] = useState(
     budgetItemContainer.name

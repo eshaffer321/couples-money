@@ -17,6 +17,11 @@ export const ControlledInput = ({ value, onChange, rightAligned = false }: Props
     }
   };
 
+  const handleClick = (event: React.MouseEvent<HTMLInputElement>) => {
+    // Stop the event from propagating to the parent element
+    event.stopPropagation();
+  };
+
   const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
     setIsFocused(true);
   };
@@ -34,10 +39,8 @@ export const ControlledInput = ({ value, onChange, rightAligned = false }: Props
       onChange={handleChange}
       onFocus={handleFocus}
       onBlur={handleBlur}
+      onClick={handleClick}
     />
   );
 };
-
-
-
 

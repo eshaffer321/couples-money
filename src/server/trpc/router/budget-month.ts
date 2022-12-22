@@ -17,6 +17,12 @@ export const budgetMonthRouter = router({
     const userSession = ctx.session.user;
     return await budgetMonthService.getBudgetMonth(userSession.currentBudgetAccount, input.monthYearId);
   }),
+  copy: protectedProcedure
+  .input(monthYearIdValidation)
+  .mutation(async ({ input, ctx }) => {
+    const userSession = ctx.session.user;
+    return await budgetMonthService.copy(userSession.currentBudgetAccount, input.monthYearId);
+  }),
   getBudgetMonthOptions: protectedProcedure
   .query(async() => await budgetMonthService.getBudgetMonthOptions())
 });

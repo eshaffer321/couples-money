@@ -1,16 +1,16 @@
 import { BudgetItem, BudgetItemContainer, MonthlyBudget } from "@prisma/client";
-import { useState } from "react";
-import BudgetMonthCard from "../BudgetMonth/BudgetMonthCard";
+import { useMemo, useState } from "react";
+import BudgetGroupRenderer from "../BudgetGroup/BudgetGroupRenderer";
 import Modal from "../Modal";
-import NewBudgetGroupModal from "./NewBudgetGroupModal";
+import NewBudgetGroupModal from "../BudgetGroup/NewBudgetGroupModal";
 
 interface Props {
   budget: MonthlyBudget & {
-    budgetGroup: (BudgetItemContainer & { budgetItem: BudgetItem[]; })[];
+    budgetGroup: (BudgetItemContainer & { budgetItem: BudgetItem[] })[];
   };
 }
 
-export default function SeparateCards(props: Props) {
+export default function BudgetMonthRenderer(props: Props) {
   const { budget } = props;
   const [isModalOpen, setModal] = useState(false);
 
@@ -39,7 +39,9 @@ export default function SeparateCards(props: Props) {
               key={item.id}
               className="overflow-hidden rounded-md bg-white py-5 px-4 shadow"
             >
-              <BudgetMonthCard budgetItemContainer={item}></BudgetMonthCard>
+              <BudgetGroupRenderer
+                budgetItemContainer={item}
+              ></BudgetGroupRenderer>
             </li>
           ))}
 

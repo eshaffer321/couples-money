@@ -4,6 +4,7 @@ import { BudgetMonthSelectOption } from "../../server/service/budgetMonthService
 import { trpc } from "../../utils/trpc";
 interface Props {
   selectedBudgetMonth?: BudgetMonthSelectOption;
+  setBudgetMonth: (budgetMonth: MonthlyBudget) => void;
 }
 
 // TODO: Make it so either user can select what previous month to copy, or just copy the last month with any valid data.
@@ -14,20 +15,29 @@ export default function EmptyBudgetMonthCard(props: Props) {
   if (!selectedBudgetMonth) {
     return <div>Loading...</div>;
   }
-  
-  const createMutation = trpc.budgetMonth.create.useMutation({onSuccess(data, variables, context) {
-     setBudgetMonth(data);
-  },});
+
+  const createMutation = trpc.budgetMonth.create.useMutation({
+    onSuccess(data, variables, context) {
+      setBudgetMonth(data);
+    },
+  });
+
+  const copyMutation = trpc.budgetMonth.copy.useMutation({
+    onSuccess(data, variables, context) {
+      setBudgetMonth((prevBudgetMonth: any) => {
+        return {
+          ...prevBudgetMonth,
+          ...data,
+        };
+      });
+    },
+  });
 
   const copyBudgetMonth = () => {
-    console.log(
-      "Copy budget month clicked for " + selectedBudgetMonth.monthYearId
-    );
+    copyMutation.mutate({ monthYearId: selectedBudgetMonth.monthYearId });
   };
 
   const createNewBudgetMonth = () => {
-    // TODO: create a new budget month for this given motn
-    console.log("Create new budget month clicked!");
     createMutation.mutate({ monthYearId: selectedBudgetMonth.monthYearId });
   };
 
@@ -42,13 +52,11 @@ export default function EmptyBudgetMonthCard(props: Props) {
             No budget found for {selectedBudgetMonth.displayName}
           </h3>
           <p className="mt-1 text-sm text-gray-500">
-            Get started by creating by copying last month or creating a new
-            budget.
+            Get started by copying last month or creating a new budget.
           </p>
           <div className="mt-6">
             <button
               type="button"
-              disabled
               className="mr-2 inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:bg-gray-300 disabled:opacity-70"
               onClick={() => copyBudgetMonth()}
             >
@@ -66,7 +74,9 @@ export default function EmptyBudgetMonthCard(props: Props) {
               New Budget
             </button>
           </div>
-          {createMutation.error && <p>Something went wrong! {createMutation.error.message}</p>}
+          {createMutation.error && (
+            <p>Something went wrong! {createMutation.error.message}</p>
+          )}
         </div>
       </div>
     </div>

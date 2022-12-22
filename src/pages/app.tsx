@@ -3,11 +3,9 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { PlusIcon as PlusIconMini } from "@heroicons/react/20/solid";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import SimpleSelectMenu from "../components/SimpleSelectMenu";
-import SeparateCards from "../components/BudgetGroup/BudgetGroupCards";
+import BudgetMonthRenderer from "../components/BudgetMonth/BudgetMonthRenderer";
 
 import { trpc } from "../utils/trpc";
-import SelectMonthModalTest from "../components/SelectMonthModal";
-import Modal from "../components/Modal";
 import { BudgetMonthSelectOption } from "../server/service/budgetMonthService";
 import PageHeader from "../components/PageHeader";
 import { BudgetItem, BudgetItemContainer, MonthlyBudget } from "@prisma/client";
@@ -36,19 +34,23 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-type BudgetItemContainerWithBudgetItem = BudgetItemContainer & { budgetItem: BudgetItem[]; }
-type MonthlyBudgetWithBudgetGroup = MonthlyBudget & { budgetGroup: BudgetItemContainerWithBudgetItem[]; }
+type BudgetItemContainerWithBudgetItem = BudgetItemContainer & {
+  budgetItem: BudgetItem[];
+};
+type MonthlyBudgetWithBudgetGroup = MonthlyBudget & {
+  budgetGroup: BudgetItemContainerWithBudgetItem[];
+};
 
-export type BudgetMonthResponse = (MonthlyBudget & {
-  budgetGroup: (BudgetItemContainer & {
-      budgetItem: BudgetItem[];
-  })[];
-}) | null
+export type BudgetMonthResponse =
+  | (MonthlyBudget & {
+      budgetGroup: (BudgetItemContainer & {
+        budgetItem: BudgetItem[];
+      })[];
+    })
+  | null;
 
 export default function App() {
-  //state
-  const [monthSelectModalOpen, setMonthSelectModal] = useState(false);
-  
+
   const [selectedMonth, setSelectedMonth] = useState<
     BudgetMonthSelectOption | undefined
   >(undefined);
@@ -311,7 +313,7 @@ This example requires updating your template:
         <main className="-mt-32">
           <div className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
             {budgetMonth ? (
-              <SeparateCards budget={budgetMonth}></SeparateCards>
+              <BudgetMonthRenderer budget={budgetMonth}></BudgetMonthRenderer>
             ) : (
               <EmptyBudgetMonthCard
                 selectedBudgetMonth={selectedMonth}

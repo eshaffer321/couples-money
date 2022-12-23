@@ -1,8 +1,8 @@
 import { prisma } from "../db/client";
 import dayjs from "dayjs";
-import customParseFormat from 'dayjs/plugin/customParseFormat';
+import customParseFormat from "dayjs/plugin/customParseFormat";
 
-dayjs.extend(customParseFormat)
+dayjs.extend(customParseFormat);
 
 export interface BudgetMonthSelectOption {
   monthYearId: string;
@@ -10,8 +10,10 @@ export interface BudgetMonthSelectOption {
   displayName: string;
 }
 
+/**
+ * A service class for managing monthly budgets.
+ */
 class BudgetMonthService {
-
   /**
    * Retrieves a specific monthly budget by budget account ID and month/year identifier.
    *
@@ -90,7 +92,7 @@ class BudgetMonthService {
         },
       },
       orderBy: {
-        name: "desc",
+        name: "asc",
       },
       include: {
         budgetGroup: {
@@ -102,7 +104,7 @@ class BudgetMonthService {
     });
 
     if (!mostRecentMonthlyBudget) {
-      const newMonthlyBudget = await prisma.monthlyBudget.create({
+      return await prisma.monthlyBudget.create({
         data: {
           budgetAccount: {
             connect: {
@@ -111,11 +113,17 @@ class BudgetMonthService {
           },
           name: monthYearId,
         },
+        include: {
+          budgetGroup: {
+            include: {
+              budgetItem: true,
+            },
+          },
+        },
       });
-      return newMonthlyBudget;
     }
 
-    const newMonthlyBudget = await prisma.monthlyBudget.create({
+    return await prisma.monthlyBudget.create({
       data: {
         budgetAccount: {
           connect: {
@@ -142,13 +150,20 @@ class BudgetMonthService {
           }),
         },
       },
+      include: {
+        budgetGroup: {
+          include: {
+            budgetItem: true,
+          },
+        },
+      },
     });
   }
 }
 
 const isValidMonthYearId = (monthYear: string) => {
   return dayjs(monthYear, ["M-YYYY", "MM-YYYY"], true).isValid();
-}
+};
 
 /**
  * Generates a list of budget month select options.

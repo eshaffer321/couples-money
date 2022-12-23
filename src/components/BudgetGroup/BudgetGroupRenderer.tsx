@@ -8,7 +8,7 @@ import { trpc } from "../../utils/trpc";
 import BudgetListItem from "../BudgetItem/BudgetListItem";
 
 interface Props {
-  budgetItemContainer: BudgetItemContainer & { budgetItem: BudgetItem[]; };
+  budgetItemContainer: BudgetItemContainer & { budgetItem: BudgetItem[] };
 }
 
 const chevronVariants = {
@@ -35,6 +35,11 @@ export default function BudgetGroupRenderer(props: Props) {
     return acc + item.amount;
   }, 0);
 
+  const newBudgetItemRelativeOrder =
+    budgetItemContainer.budgetItem
+      ?.map((item) => item.relativeOrder)
+      .reduce((a, b) => Math.max(a, b), 0) + 1;
+
   const updateBudgetGroupName = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -48,12 +53,6 @@ export default function BudgetGroupRenderer(props: Props) {
   };
 
   // get one higher than the highest relative order or 0 if there are no budget items
-  const newBudgetItemRelativeOrder =
-    budgetItemContainer.budgetItem.reduce(
-      (acc, curr) => (curr.relativeOrder > acc ? curr.relativeOrder : acc),
-      0
-    ) + 1;
-
   return (
     <div className="rounded-md border-gray-200 bg-white py-1 sm:px-1">
       <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
@@ -111,7 +110,7 @@ export default function BudgetGroupRenderer(props: Props) {
           >
             <ul role="list" className="divide-y divide-gray-300">
               {budgetItemContainer.budgetItem
-                .sort((a, b) => a.relativeOrder - b.relativeOrder)
+                ?.sort((a, b) => a.relativeOrder - b.relativeOrder)
                 .map((item) => (
                   <BudgetListItem key={item.id} item={item}></BudgetListItem>
                 ))}

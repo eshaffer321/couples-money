@@ -1,5 +1,5 @@
 import { BudgetItem, BudgetItemContainer, MonthlyBudget } from "@prisma/client";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import BudgetGroupRenderer from "../BudgetGroup/BudgetGroupRenderer";
 import Modal from "../Modal";
 import NewBudgetGroupModal from "../BudgetGroup/NewBudgetGroupModal";
@@ -15,7 +15,7 @@ export default function BudgetMonthRenderer(props: Props) {
   const [isModalOpen, setModal] = useState(false);
 
   const newBudgetMonthrelativeOrder =
-    budget.budgetGroup.reduce(
+    budget.budgetGroup?.reduce(
       (acc, curr) => (curr.relativeOrder > acc ? curr.relativeOrder : acc),
       0
     ) + 1;
@@ -33,7 +33,7 @@ export default function BudgetMonthRenderer(props: Props) {
 
       <ul role="list" className="space-y-4">
         {budget.budgetGroup
-          .sort((a, b) => a.relativeOrder - b.relativeOrder)
+          ?.sort((a, b) => a.relativeOrder - b.relativeOrder)
           .map((item) => (
             <li
               key={item.id}
